@@ -1,0 +1,31 @@
+# Environment configuration
+.env
+.env.local
+
+# Composer dependencies
+/vendor/
+
+# Nested git subfolders / scratch
+tych_crm/
+
+# Storage & Runtime logs
+/storage/logs/*.log
+/storage/backups/*.sql
+/storage/backups/*.zip
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+!/storage/logs/.gitkeep
+!/storage/backups/.gitkeep
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db

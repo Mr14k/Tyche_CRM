@@ -1,0 +1,14 @@
+{
+    "name": "tyche/academy",
+    "description": "Tyche Digital Marketing Academy Platform",
+    "type": "project",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    }
+}
