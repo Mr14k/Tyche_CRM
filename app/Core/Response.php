@@ -34,6 +34,9 @@ class Response
 
     public function redirect(string $url, int $code = 302): void
     {
+        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+            $url = \App\Helpers\Url::to($url);
+        }
         http_response_code($code);
         header("Location: $url");
         exit;
