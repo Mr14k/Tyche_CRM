@@ -91,7 +91,8 @@
                                 <td><?= \App\Helpers\Security::e($t['email']) ?></td>
                                 <td>
                                     <form action="<?= \App\Helpers\Url::to('/admin/tenants/' . $t['id'] . '/plan') ?>" method="POST" class="d-inline-flex">
-                                        <input type="hidden" name="csrf_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
+                                        <input type="hidden" name="_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
+<input type="hidden" name="csrf_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
                                         <select name="plan_name" class="form-control form-control-sm rounded-pill" onchange="this.form.submit()">
                                             <option value="Bronze" <?= $t['plan_name'] === 'Bronze' ? 'selected' : '' ?>>Bronze (100 Leads)</option>
                                             <option value="Silver" <?= $t['plan_name'] === 'Silver' ? 'selected' : '' ?>>Silver (1,000 Leads)</option>
@@ -132,7 +133,8 @@
                 </button>
             </div>
             <form action="<?= \App\Helpers\Url::to('/admin/tenants') ?>" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
+                <input type="hidden" name="_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
+<input type="hidden" name="csrf_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
                 <div class="modal-body p-4">
                     <div class="form-group mb-3">
                         <label class="font-weight-bold text-dark">Academy Name</label>
