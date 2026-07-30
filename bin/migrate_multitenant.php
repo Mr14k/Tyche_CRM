@@ -63,6 +63,7 @@ try {
         'payments',
         'invoices',
         'batches',
+        'certificates',
         'site_settings',
         'banners',
         'pages',

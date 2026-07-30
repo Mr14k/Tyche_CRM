@@ -6,6 +6,8 @@ namespace App\Controllers\Admin;
 
 use App\Core\Controller;
 use App\Core\Request;
+use App\Core\Session;
+use App\Core\TenantContext;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\PlanFeatureService;
@@ -22,8 +24,23 @@ class TenantController extends Controller
         $this->tenantModel = new Tenant();
     }
 
+    private function enforceSuperAdminAccess(): bool
+    {
+        $user = Session::get('user');
+        if (($user['tenant_id'] ?? 1) !== 1 || TenantContext::getTenantId() !== 1) {
+            Flash::error("Access Denied: Super SaaS Admin privileges required.");
+            $this->redirect('/admin/dashboard');
+            return false;
+        }
+        return true;
+    }
+
     public function index(Request $request): void
     {
+        if (!$this->enforceSuperAdminAccess()) {
+            return;
+        }
+
         $tenants = $this->tenantModel->all();
         $plans = PlanFeatureService::getPlans();
 
@@ -36,6 +53,10 @@ class TenantController extends Controller
 
     public function store(Request $request): void
     {
+        if (!$this->enforceSuperAdminAccess()) {
+            return;
+        }
+
         $data = $this->validate($request, [
             'name' => 'required|min:3',
             'subdomain' => 'required|min:3|alpha_dash',
@@ -96,6 +117,10 @@ class TenantController extends Controller
 
     public function updatePlan(Request $request, string $id): void
     {
+        if (!$this->enforceSuperAdminAccess()) {
+            return;
+        }
+
         $tenantId = (int)$id;
         $planName = Security::sanitize($request->get('plan_name', 'Bronze'));
 

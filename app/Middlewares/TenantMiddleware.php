@@ -18,7 +18,15 @@ class TenantMiddleware implements Middleware
         $tenantId = 1;
         $tenantData = null;
 
-        // 1. Check for explicit query override (?tenant=subdomain or ?t=subdomain)
+        // Security Enforcement: If user is logged in and NOT Super SaaS Admin (Tenant 1), lock to assigned tenant_id
+        if (!empty($_SESSION['user']['tenant_id']) && (int)$_SESSION['user']['tenant_id'] !== 1) {
+            $tenantId = (int)$_SESSION['user']['tenant_id'];
+            $tenantData = $tenantModel->find($tenantId);
+            TenantContext::setTenantId($tenantId, $tenantData);
+            return $next($request);
+        }
+
+        // 1. Check for explicit query override (?tenant=subdomain or ?t=subdomain) — Super Admin or Guest
         $override = $request->get('tenant') ?? $request->get('t');
         if ($override) {
             $matched = $tenantModel->findBySubdomain((string)$override);

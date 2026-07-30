@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Core\Model;
 use App\Core\Database;
+use App\Core\TenantContext;
 
 class Payment extends Model
 {
@@ -14,6 +15,7 @@ class Payment extends Model
 
     public function getPaymentsWithDetails(): array
     {
+        $tid = TenantContext::getTenantId();
         $sql = "SELECT p.*, 
                        COALESCE(a.admission_number, 'DIRECT-ENROLL') as admission_number,
                        COALESCE(u.first_name, u_direct.first_name, 'Guest') as first_name, 
@@ -26,7 +28,8 @@ class Payment extends Model
                 LEFT JOIN courses c ON a.course_id = c.id
                 LEFT JOIN users u_direct ON p.user_id = u_direct.id
                 LEFT JOIN courses c_direct ON p.course_id = c_direct.id
+                WHERE p.tenant_id = :tid
                 ORDER BY p.payment_date DESC";
-        return Database::fetchAll($sql);
+        return Database::fetchAll($sql, ['tid' => $tid]);
     }
 }
