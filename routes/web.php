@@ -166,10 +166,16 @@ $router->group(['prefix' => '/faculty', 'middleware' => ['auth', 'perm:FACULTY.W
     $router->post('/assignments/{id}/grade', [FacultyAssignmentController::class, 'grade'])->middleware('csrf');
 });
 
+use App\Controllers\Admin\TenantController;
+
 // ----------------------------------------------------
 // Admin Control Center Routes (Phases 2 - 14)
 // ----------------------------------------------------
-$router->group(['prefix' => '/admin', 'middleware' => ['auth']], function($router) {
+$router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], function($router) {
+    // Multi-Tenant Pilot Academy Management
+    $router->get('/tenants', [TenantController::class, 'index'])->name('admin.tenants')->middleware('role:Admin');
+    $router->post('/tenants', [TenantController::class, 'store'])->middleware('csrf')->middleware('role:Admin');
+
     // User & RBAC Management
     $router->get('/users', [UserManagementController::class, 'index'])->name('admin.users')->middleware('role:Admin');
     $router->post('/users', [UserManagementController::class, 'store'])->middleware('csrf')->middleware('role:Admin');

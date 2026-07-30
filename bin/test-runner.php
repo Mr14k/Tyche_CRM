@@ -34,7 +34,7 @@ date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'Asia/Kolkata');
 
 echo "=====================================================\n";
 echo "    TYCHE ACADEMY AUTOMATED ARCHITECTURE TESTER      \n";
-echo "    (Complete Monolith Phases 0 - 14 Final Suite)    \n";
+echo "    (Complete Monolith & Multi-Tenant Test Suite)    \n";
 echo "=====================================================\n\n";
 
 $passed = 0;
@@ -66,7 +66,34 @@ try {
 }
 
 // ----------------------------------------------------
-// 2. Test Security & Password Hashing
+// 2. Test Multi-Tenancy Scoping & Isolation
+// ----------------------------------------------------
+try {
+    \App\Core\TenantContext::setTenantId(1);
+    assertTest("TenantContext sets active tenant ID (Tenant 1)", \App\Core\TenantContext::getTenantId() === 1);
+
+    $tenantModel = new \App\Models\Tenant();
+    $primaryTenant = $tenantModel->find(1);
+    assertTest("Tenant model retrieves Primary Tenant (ID 1)", !empty($primaryTenant) && $primaryTenant['subdomain'] === 'primary');
+
+    // Test Model Tenant Data Isolation
+    $userModel = new \App\Models\User();
+    $tenant1Users = $userModel->all();
+    
+    // Switch to non-existent Tenant ID 99999
+    \App\Core\TenantContext::setTenantId(99999);
+    $tenant99999Users = $userModel->all();
+    
+    assertTest("Model automatically isolates data queries per Tenant ID", count($tenant1Users) > 0 && count($tenant99999Users) === 0);
+
+    // Reset back to Primary Tenant 1
+    \App\Core\TenantContext::setTenantId(1);
+} catch (\Exception $e) {
+    assertTest("Multi-Tenancy Test failed: " . $e->getMessage(), false);
+}
+
+// ----------------------------------------------------
+// 3. Test Security & Password Hashing
 // ----------------------------------------------------
 $password = "SecretPass123!";
 $hash = \App\Helpers\Security::hashPassword($password);
@@ -74,11 +101,11 @@ assertTest("Security::hashPassword generates non-empty hash", !empty($hash));
 assertTest("Security::verifyPassword verifies matching password", \App\Helpers\Security::verifyPassword($password, $hash));
 
 // ----------------------------------------------------
-// 3. Test Auth & RBAC Logic
+// 4. Test Auth & RBAC Logic
 // ----------------------------------------------------
 try {
     $authService = new \App\Services\AuthService();
-    $user = $authService->attempt('admin@tyche.academy', 'Admin@123456', '127.0.0.1', 'PHPUnit Test');
+    $user = $authService->attempt('admin@tyche.academy', 'Admin@123', '127.0.0.1', 'PHPUnit Test');
     assertTest("AuthService authenticates Super Admin credentials", $user['email'] === 'admin@tyche.academy');
     assertTest("RbacService detects BI.ViewReports permission", \App\Services\RbacService::hasPermission('BI.ViewReports'));
     assertTest("RbacService detects SYSTEM.AdminConsole permission", \App\Services\RbacService::hasPermission('SYSTEM.AdminConsole'));
@@ -87,7 +114,7 @@ try {
 }
 
 // ----------------------------------------------------
-// 4. Test Phase 12 Business Intelligence Telemetry
+// 5. Test Phase 12 Business Intelligence Telemetry
 // ----------------------------------------------------
 try {
     $biService = new \App\Services\BusinessIntelligenceService();
@@ -99,7 +126,7 @@ try {
 }
 
 // ----------------------------------------------------
-// 5. Test Phase 13 Placement & Job Application Lifecycle
+// 6. Test Phase 13 Placement & Job Application Lifecycle
 // ----------------------------------------------------
 try {
     $placementService = new \App\Services\PlacementService();
@@ -112,7 +139,7 @@ try {
 }
 
 // ----------------------------------------------------
-// 6. Test Phase 14 Coupon Engine & Discount Validation
+// 7. Test Phase 14 Coupon Engine & Discount Validation
 // ----------------------------------------------------
 try {
     $automationService = new \App\Services\MarketingAutomationService();
@@ -125,7 +152,7 @@ try {
 }
 
 // ----------------------------------------------------
-// 7. Test Phase 14 Database Backup & System Health Diagnostic
+// 8. Test Phase 14 Database Backup & System Health Diagnostic
 // ----------------------------------------------------
 try {
     $sysAdminService = new \App\Services\SystemAdminService();

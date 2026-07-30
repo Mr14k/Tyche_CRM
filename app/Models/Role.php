@@ -10,6 +10,7 @@ use App\Core\Database;
 class Role extends Model
 {
     protected string $table = 'roles';
+    protected bool $tenantScoped = false;
 
     public function getPermissions(int $roleId): array
     {

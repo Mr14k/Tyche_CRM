@@ -161,6 +161,7 @@ class Router
             'perm' => \App\Middlewares\PermMiddleware::class,
             'csrf' => \App\Middlewares\CsrfMiddleware::class,
             'log' => \App\Middlewares\LogMiddleware::class,
+            'tenant' => \App\Middlewares\TenantMiddleware::class,
         ];
 
         return $map[$name] ?? $name;

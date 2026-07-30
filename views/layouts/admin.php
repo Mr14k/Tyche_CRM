@@ -287,6 +287,9 @@
             <a href="<?= Url::to('/dashboard') ?>" class="nav-item-link <?= $_SERVER['REQUEST_URI'] === Url::to('/dashboard') ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i> Telemetry Overview
             </a>
+            <a href="<?= Url::to('/admin/tenants') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/tenants') ? 'active' : '' ?>">
+                <i class="bi bi-building"></i> SaaS Pilot Academies
+            </a>
             <?php if (\App\Services\RbacService::hasPermission('BI.ViewReports')): ?>
                 <a href="<?= Url::to('/admin/bi/dashboard') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/bi/dashboard') ? 'active' : '' ?>">
                     <i class="bi bi-graph-up-arrow"></i> Executive BI Telemetry

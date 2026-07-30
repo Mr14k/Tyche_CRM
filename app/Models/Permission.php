@@ -10,6 +10,7 @@ use App\Core\Database;
 class Permission extends Model
 {
     protected string $table = 'permissions';
+    protected bool $tenantScoped = false;
 
     public function getAllGroupedByModule(): array
     {
