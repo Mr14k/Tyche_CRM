@@ -301,6 +301,9 @@
                 <a href="<?= Url::to('/admin/tenants') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/tenants') ? 'active' : '' ?>">
                     <i class="bi bi-building"></i> SaaS Pilot Academies
                 </a>
+                <a href="<?= Url::to('/admin/subscriptions') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/subscriptions') ? 'active' : '' ?>">
+                    <i class="bi bi-credit-card-2-front"></i> SaaS Subscription Manager
+                </a>
             <?php endif; ?>
             <?php if (\App\Services\RbacService::hasPermission('BI.ViewReports') && \App\Services\PlanFeatureService::hasModuleAccess('bi')): ?>
                 <a href="<?= Url::to('/admin/bi/dashboard') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/bi/dashboard') ? 'active' : '' ?>">

@@ -13,6 +13,7 @@ class PlanFeatureService
     private static array $plans = [
         'Bronze' => [
             'name' => 'Bronze Tier',
+            'price' => 2999.00,
             'max_leads' => 100,
             'max_courses' => 5,
             'max_students' => 100,
@@ -20,6 +21,7 @@ class PlanFeatureService
         ],
         'Silver' => [
             'name' => 'Silver Tier',
+            'price' => 7999.00,
             'max_leads' => 1000,
             'max_courses' => 25,
             'max_students' => 1000,
@@ -27,6 +29,7 @@ class PlanFeatureService
         ],
         'Gold' => [
             'name' => 'Gold Tier',
+            'price' => 14999.00,
             'max_leads' => 10000,
             'max_courses' => 100,
             'max_students' => 10000,
@@ -34,6 +37,7 @@ class PlanFeatureService
         ],
         'Enterprise' => [
             'name' => 'Enterprise Tier',
+            'price' => 29999.00,
             'max_leads' => -1,
             'max_courses' => -1,
             'max_students' => -1,
@@ -43,6 +47,28 @@ class PlanFeatureService
 
     public static function getPlans(): array
     {
+        try {
+            $dbPlans = Database::fetchAll("SELECT * FROM subscription_plans WHERE is_active = 1 ORDER BY price ASC");
+            if (!empty($dbPlans)) {
+                $result = [];
+                foreach ($dbPlans as $dp) {
+                    $result[$dp['plan_key']] = [
+                        'id' => (int)$dp['id'],
+                        'plan_key' => $dp['plan_key'],
+                        'name' => $dp['name'],
+                        'price' => (float)$dp['price'],
+                        'billing_cycle' => $dp['billing_cycle'] ?? 'monthly',
+                        'max_leads' => (int)$dp['max_leads'],
+                        'max_courses' => (int)$dp['max_courses'],
+                        'max_students' => (int)$dp['max_students'],
+                        'modules' => !empty($dp['modules']) ? json_decode($dp['modules'], true) : ['crm', 'lms']
+                    ];
+                }
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            // Fallback to static
+        }
         return self::$plans;
     }
 
@@ -53,9 +79,10 @@ class PlanFeatureService
         $tenant = $tenantModel->find($id);
 
         $planName = $tenant['plan_name'] ?? 'Bronze';
+        $allPlans = self::getPlans();
         
         // Match plan or fallback to Bronze
-        foreach (self::$plans as $key => $plan) {
+        foreach ($allPlans as $key => $plan) {
             if (strcasecmp($key, $planName) === 0 || str_contains(strtolower($planName), strtolower($key))) {
                 return array_merge(['plan_key' => $key], $plan);
             }
@@ -111,7 +138,7 @@ class PlanFeatureService
         }
 
         $plan = self::getTenantPlan($id);
-        return in_array(strtolower($moduleKey), $plan['modules'], true) || $plan['plan_key'] === 'Enterprise';
+        return in_array(strtolower($moduleKey), $plan['modules'], true) || ($plan['plan_key'] ?? '') === 'Enterprise';
     }
 
     public static function getTenantUsageStats(int $tenantId): array
