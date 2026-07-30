@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Core\Model;
 use App\Core\Database;
+use App\Core\TenantContext;
 
 class Lead extends Model
 {
@@ -13,15 +14,16 @@ class Lead extends Model
 
     public function getLeadsWithDetails(?array $filters = []): array
     {
+        $tid = TenantContext::getTenantId();
         $sql = "SELECT l.*, c.title as course_title, c.price, c.discount_price, c.live_cohort_price,
                        b.batch_name, u.first_name as counselor_first, u.last_name as counselor_last 
                 FROM leads l
                 LEFT JOIN courses c ON l.course_id = c.id
                 LEFT JOIN batches b ON l.batch_id = b.id
                 LEFT JOIN users u ON l.counselor_id = u.id
-                WHERE 1=1";
+                WHERE l.tenant_id = :tid";
         
-        $params = [];
+        $params = ['tid' => $tid];
 
         if (!empty($filters['status'])) {
             $sql .= " AND l.status = :status";
@@ -59,6 +61,7 @@ class Lead extends Model
 
     public function findLead360(int $id): ?array
     {
+        $tid = TenantContext::getTenantId();
         $sql = "SELECT l.*, c.title as course_title, c.slug as course_slug, c.price, c.discount_price, c.live_cohort_price,
                        b.batch_name, b.start_date as batch_start_date, b.schedule_type,
                        u.first_name as counselor_first, u.last_name as counselor_last, u.email as counselor_email
@@ -66,7 +69,7 @@ class Lead extends Model
                 LEFT JOIN courses c ON l.course_id = c.id
                 LEFT JOIN batches b ON l.batch_id = b.id
                 LEFT JOIN users u ON l.counselor_id = u.id
-                WHERE l.id = :id LIMIT 1";
-        return Database::fetchOne($sql, ['id' => $id]);
+                WHERE l.id = :id AND l.tenant_id = :tid LIMIT 1";
+        return Database::fetchOne($sql, ['id' => $id, 'tid' => $tid]);
     }
 }

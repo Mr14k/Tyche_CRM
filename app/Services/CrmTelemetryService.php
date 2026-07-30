@@ -6,32 +6,35 @@ namespace App\Services;
 
 use App\Core\Service;
 use App\Core\Database;
+use App\Core\TenantContext;
 
 class CrmTelemetryService extends Service
 {
-    public function getExecutiveMetrics(): array
+    public function getExecutiveMetrics(?int $tenantId = null): array
     {
-        $totalLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads")['c'] ?? 0);
-        $newLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'new'")['c'] ?? 0);
-        $contactedLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status NOT IN ('new')")['c'] ?? 0);
-        $enrolledLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'enrolled'")['c'] ?? 0);
-        $lostLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'lost'")['c'] ?? 0);
-        $slaBreaches = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE is_sla_breached = 1")['c'] ?? 0);
+        $tid = $tenantId ?? TenantContext::getTenantId();
+
+        $totalLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE tenant_id = :tid", ['tid' => $tid])['c'] ?? 0);
+        $newLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'new' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0);
+        $contactedLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status NOT IN ('new') AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0);
+        $enrolledLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'enrolled' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0);
+        $lostLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'lost' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0);
+        $slaBreaches = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE is_sla_breached = 1 AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0);
 
         $contactedPct = $totalLeads > 0 ? round(($contactedLeads / $totalLeads) * 100, 1) : 0;
         $conversionPct = $totalLeads > 0 ? round(($enrolledLeads / $totalLeads) * 100, 1) : 0;
 
-        $revenueCollected = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payments WHERE status = 'completed'")['s'] ?? 0);
-        $pendingPayments = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payment_links WHERE status = 'active'")['s'] ?? 0);
+        $revenueCollected = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payments WHERE status = 'completed' AND tenant_id = :tid", ['tid' => $tid])['s'] ?? 0);
+        $pendingPayments = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payment_links WHERE status = 'active' AND tenant_id = :tid", ['tid' => $tid])['s'] ?? 0);
 
         // Funnel Breakdown
         $stages = [
-            'new' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'new'")['c'] ?? 0),
-            'contacted' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'contacted'")['c'] ?? 0),
-            'qualified' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'qualified'")['c'] ?? 0),
-            'nurturing' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'nurturing'")['c'] ?? 0),
-            'application_sent' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'application_sent'")['c'] ?? 0),
-            'payment_link_generated' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'payment_link_generated'")['c'] ?? 0),
+            'new' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'new' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0),
+            'contacted' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'contacted' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0),
+            'qualified' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'qualified' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0),
+            'nurturing' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'nurturing' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0),
+            'application_sent' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'application_sent' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0),
+            'payment_link_generated' => (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads WHERE status = 'payment_link_generated' AND tenant_id = :tid", ['tid' => $tid])['c'] ?? 0),
             'enrolled' => $enrolledLeads,
             'lost' => $lostLeads
         ];
@@ -39,7 +42,7 @@ class CrmTelemetryService extends Service
         // Channel ROI / Source breakdown
         $sourceBreakdown = Database::fetchAll("SELECT source, COUNT(*) as lead_count, 
                                                 SUM(CASE WHEN status = 'enrolled' THEN 1 ELSE 0 END) as enrolled_count
-                                                FROM leads GROUP BY source ORDER BY lead_count DESC");
+                                                FROM leads WHERE tenant_id = :tid GROUP BY source ORDER BY lead_count DESC", ['tid' => $tid]);
 
         // Counselor Performance
         $counselorPerformance = Database::fetchAll("SELECT u.id, u.first_name, u.last_name,
@@ -48,10 +51,10 @@ class CrmTelemetryService extends Service
                                                      SUM(CASE WHEN l.status = 'enrolled' THEN 1 ELSE 0 END) as enrolled_count,
                                                      SUM(CASE WHEN l.is_sla_breached = 1 THEN 1 ELSE 0 END) as sla_breaches
                                                      FROM users u
-                                                     LEFT JOIN leads l ON l.counselor_id = u.id
+                                                     LEFT JOIN leads l ON l.counselor_id = u.id AND l.tenant_id = :tid
+                                                     WHERE u.tenant_id = :tid
                                                      GROUP BY u.id
-                                                     ORDER BY total_assigned DESC");
-
+                                                     ORDER BY total_assigned DESC", ['tid' => $tid]);
 
         return [
             'total_leads' => $totalLeads,

@@ -48,9 +48,9 @@ class LeadController extends Controller
         $leads = $this->leadModel->getLeadsWithDetails($filters);
         $telemetry = $this->telemetryService->getExecutiveMetrics();
 
-        $counselors = Database::fetchAll("SELECT id, first_name, last_name FROM users ORDER BY first_name ASC");
-
-        $courses = Database::fetchAll("SELECT id, title FROM courses ORDER BY title ASC");
+        $tid = \App\Core\TenantContext::getTenantId();
+        $counselors = Database::fetchAll("SELECT id, first_name, last_name FROM users WHERE tenant_id = :tid ORDER BY first_name ASC", ['tid' => $tid]);
+        $courses = Database::fetchAll("SELECT id, title FROM courses WHERE tenant_id = :tid ORDER BY title ASC", ['tid' => $tid]);
 
         $this->view('admin.crm.leads.index', [
             'pageTitle' => 'Leads Sales Pipeline & Lifecycle — Tyche CRM',
