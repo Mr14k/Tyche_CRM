@@ -204,6 +204,16 @@
             color: #F3EEE2 !important;
         }
 
+        .text-dark:not(.bg-white *) {
+            color: #F8FAFC !important;
+        }
+
+        .badge-light:not(.bg-white *) {
+            background-color: #0F1620 !important;
+            color: #E2E8F0 !important;
+            border: 1px solid rgba(243,238,226,0.2) !important;
+        }
+
 
         .btn-gold {
             background: var(--gold);
