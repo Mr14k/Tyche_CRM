@@ -168,7 +168,6 @@ $router->group(['prefix' => '/faculty', 'middleware' => ['auth', 'perm:FACULTY.W
     $router->post('/assignments/{id}/grade', [FacultyAssignmentController::class, 'grade'])->middleware('csrf');
 });
 
-use App\Controllers\Admin\TenantController;
 
 // ----------------------------------------------------
 // Admin Control Center Routes (Phases 2 - 14)
