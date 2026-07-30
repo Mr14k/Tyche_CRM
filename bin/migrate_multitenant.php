@@ -36,6 +36,7 @@ try {
             `phone` varchar(30) DEFAULT NULL,
             `status` enum('active','suspended','pending') NOT NULL DEFAULT 'active',
             `plan_name` varchar(50) NOT NULL DEFAULT 'Starter',
+            `modules` text DEFAULT NULL,
             `created_at` datetime NOT NULL DEFAULT current_timestamp(),
             `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
             PRIMARY KEY (`id`),
@@ -54,16 +55,22 @@ try {
         echo "[✓] Seeded default Primary Tenant (ID 1).\n";
     }
 
-    // 3. Complete List of all models & tables requiring tenant_id
+    // 3. Complete List of all domain & auxiliary tables requiring tenant_id
     $tables = [
         'users',
         'leads',
+        'lead_activities',
         'courses',
         'admissions',
         'payments',
+        'payment_links',
         'invoices',
         'batches',
         'certificates',
+        'assignments',
+        'assignment_submissions',
+        'employers',
+        'resumes',
         'site_settings',
         'banners',
         'pages',
