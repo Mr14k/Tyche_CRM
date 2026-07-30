@@ -93,12 +93,13 @@ try {
 }
 
 // ----------------------------------------------------
-// 3. Test Security & Password Hashing
+// 3. Test Security, Hashing & Sanitization
 // ----------------------------------------------------
 $password = "SecretPass123!";
 $hash = \App\Helpers\Security::hashPassword($password);
 assertTest("Security::hashPassword generates non-empty hash", !empty($hash));
 assertTest("Security::verifyPassword verifies matching password", \App\Helpers\Security::verifyPassword($password, $hash));
+assertTest("Security::sanitize strips HTML and trims input", \App\Helpers\Security::sanitize("  <b>Apex Academy</b>  ") === "Apex Academy");
 
 // ----------------------------------------------------
 // 4. Test Auth & RBAC Logic

@@ -16,6 +16,14 @@ class Security
         return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
+    public static function sanitize(mixed $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        return trim(strip_tags((string)$value));
+    }
+
     public static function csrfToken(): string
     {
         if (!Session::has('_csrf_token')) {
