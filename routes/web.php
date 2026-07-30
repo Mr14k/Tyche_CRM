@@ -16,6 +16,7 @@ use App\Controllers\Auth\ForgotPasswordController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\TenantController;
 use App\Controllers\Admin\SubscriptionController;
+use App\Controllers\Admin\SaasCommandCenterController;
 use App\Controllers\Admin\UserManagementController;
 use App\Controllers\Admin\RoleManagementController;
 use App\Controllers\Admin\NotificationController;
@@ -186,6 +187,10 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
     $router->post('/subscriptions/plans', [SubscriptionController::class, 'storePlan'])->middleware('csrf')->middleware('role:Admin');
     $router->post('/subscriptions/plans/{id}', [SubscriptionController::class, 'updatePlan'])->middleware('csrf')->middleware('role:Admin');
     $router->post('/subscriptions/reminder/{id}', [SubscriptionController::class, 'sendRenewalReminder'])->middleware('csrf')->middleware('role:Admin');
+
+    // SaaS Command Center (Global Tower & AWS Console view)
+    $router->get('/saas/command-center', [SaasCommandCenterController::class, 'index'])->name('admin.saas.command_center')->middleware('role:Admin');
+    $router->post('/saas/command-center/action', [SaasCommandCenterController::class, 'executeAction'])->middleware('csrf')->middleware('role:Admin');
 
     // User & RBAC Management
     $router->get('/users', [UserManagementController::class, 'index'])->name('admin.users')->middleware('role:Admin');

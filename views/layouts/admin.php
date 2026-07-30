@@ -298,6 +298,9 @@
                 <i class="bi bi-speedometer2"></i> Telemetry Overview
             </a>
             <?php if (($_SESSION['user']['tenant_id'] ?? 1) === 1): ?>
+                <a href="<?= Url::to('/admin/saas/command-center') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/saas/command-center') ? 'active' : '' ?>" style="color: #D9AE68; font-weight: 600;">
+                    <i class="bi bi-broadcast-pin text-warning"></i> SaaS Command Center
+                </a>
                 <a href="<?= Url::to('/admin/tenants') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/tenants') ? 'active' : '' ?>">
                     <i class="bi bi-building"></i> SaaS Pilot Academies
                 </a>
