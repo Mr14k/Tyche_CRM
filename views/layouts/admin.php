@@ -23,6 +23,21 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
         }
+        #spa-loader-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, #D9AE68, #F59E0B, #60A5FA);
+            z-index: 9999;
+            transition: width 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            box-shadow: 0 0 10px rgba(217, 174, 104, 0.8);
+        }
+        #app-content {
+            transition: opacity 0.15s ease-in-out;
+        }
         .sidebar {
             width: 260px;
             background: var(--bg-elevated);
@@ -272,6 +287,7 @@
     </style>
 </head>
 <body>
+    <div id="spa-loader-bar"></div>
     <div class="sidebar">
         <?php
             $brandHome = Url::to('/dashboard');
@@ -555,13 +571,14 @@
             </div>
         </div>
 
-        <div class="content-body">
+        <div class="content-body" id="app-content">
             <?= \App\Helpers\Flash::render() ?>
             <?= $content ?>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= Url::to('/assets/js/spa-engine.js') ?>"></script>
     <script>
         const searchInput = document.getElementById('globalSearchInput');
         const searchDropdown = document.getElementById('searchResultsDropdown');
