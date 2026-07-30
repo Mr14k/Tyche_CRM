@@ -292,7 +292,7 @@
                     <i class="bi bi-building"></i> SaaS Pilot Academies
                 </a>
             <?php endif; ?>
-            <?php if (\App\Services\RbacService::hasPermission('BI.ViewReports')): ?>
+            <?php if (\App\Services\RbacService::hasPermission('BI.ViewReports') && \App\Services\PlanFeatureService::hasModuleAccess('bi')): ?>
                 <a href="<?= Url::to('/admin/bi/dashboard') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/bi/dashboard') ? 'active' : '' ?>">
                     <i class="bi bi-graph-up-arrow"></i> Executive BI Telemetry
                 </a>
@@ -322,7 +322,7 @@
             </a>
         <?php endif; ?>
 
-        <?php if (\App\Services\RbacService::hasPermission('PLACEMENT.ManageJobs')): ?>
+        <?php if (\App\Services\RbacService::hasPermission('PLACEMENT.ManageJobs') && \App\Services\PlanFeatureService::hasModuleAccess('placement')): ?>
             <div class="nav-label">Placement & Career</div>
             <a href="<?= Url::to('/admin/placement/jobs') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/placement/jobs') ? 'active' : '' ?>">
                 <i class="bi bi-briefcase-fill"></i> Job Openings Board
@@ -332,7 +332,7 @@
             </a>
         <?php endif; ?>
 
-        <?php if (\App\Services\RbacService::hasPermission('AUTOMATION.ManageCampaigns')): ?>
+        <?php if (\App\Services\RbacService::hasPermission('AUTOMATION.ManageCampaigns') && \App\Services\PlanFeatureService::hasModuleAccess('automation')): ?>
             <div class="nav-label">Marketing Automation</div>
             <a href="<?= Url::to('/admin/automation/campaigns') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/automation/campaigns') ? 'active' : '' ?>">
                 <i class="bi bi-megaphone-fill"></i> Campaigns & Referrals
@@ -355,7 +355,7 @@
             </a>
         <?php endif; ?>
 
-        <?php if (\App\Services\RbacService::hasPermission('CRM.ViewLeads')): ?>
+        <?php if (\App\Services\RbacService::hasPermission('CRM.ViewLeads') && \App\Services\PlanFeatureService::hasModuleAccess('crm')): ?>
             <div class="nav-label">CRM & Admissions</div>
             <a href="<?= Url::to('/admin/crm/leads') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/crm/leads') ? 'active' : '' ?>">
                 <i class="bi bi-funnel-fill"></i> Leads Sales Pipeline
@@ -369,7 +369,7 @@
         <?php endif; ?>
 
 
-        <?php if (\App\Services\RbacService::hasPermission('FINANCE.ViewPayments')): ?>
+        <?php if (\App\Services\RbacService::hasPermission('FINANCE.ViewPayments') && \App\Services\PlanFeatureService::hasModuleAccess('finance')): ?>
             <div class="nav-label">Payments & Finance</div>
             <a href="<?= Url::to('/admin/finance/payments') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/finance/payments') ? 'active' : '' ?>">
                 <i class="bi bi-currency-rupee"></i> Payment Transactions

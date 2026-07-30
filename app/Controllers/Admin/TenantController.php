@@ -43,11 +43,17 @@ class TenantController extends Controller
 
         $tenants = $this->tenantModel->all();
         $plans = PlanFeatureService::getPlans();
+        
+        $tenantMetrics = [];
+        foreach ($tenants as $t) {
+            $tenantMetrics[$t['id']] = PlanFeatureService::getTenantUsageStats((int)$t['id']);
+        }
 
         $this->view('admin.tenants.index', [
             'tenants' => $tenants,
             'plans' => $plans,
-            'title' => 'SaaS Pilot Client Academies'
+            'tenantMetrics' => $tenantMetrics,
+            'title' => 'SaaS Pilot Client Academies & Control Center'
         ], 'admin');
     }
 
@@ -74,6 +80,11 @@ class TenantController extends Controller
             return;
         }
 
+        $selectedModules = $request->get('modules', ['crm', 'lms', 'bi', 'finance']);
+        if (!is_array($selectedModules)) {
+            $selectedModules = ['crm', 'lms'];
+        }
+
         // 1. Create Tenant Record
         $tenantId = $this->tenantModel->create([
             'name' => Security::sanitize($data['name']),
@@ -81,6 +92,7 @@ class TenantController extends Controller
             'email' => Security::sanitize($data['admin_email']),
             'status' => 'active',
             'plan_name' => Security::sanitize($data['plan_name']),
+            'modules' => json_encode(array_values($selectedModules)),
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
@@ -110,6 +122,88 @@ class TenantController extends Controller
             Flash::success("Pilot Client Academy '{$data['name']}' provisioned under {$data['plan_name']} tier!");
         } else {
             Flash::error("Failed to provision new pilot client academy.");
+        }
+
+        $this->redirect('/admin/tenants');
+    }
+
+    public function update(Request $request, string $id): void
+    {
+        if (!$this->enforceSuperAdminAccess()) {
+            return;
+        }
+
+        $tenantId = (int)$id;
+        $name = Security::sanitize($request->get('name', ''));
+        $email = Security::sanitize($request->get('email', ''));
+        $planName = Security::sanitize($request->get('plan_name', 'Bronze'));
+        $status = Security::sanitize($request->get('status', 'active'));
+        
+        $selectedModules = $request->get('modules', []);
+        if (!is_array($selectedModules)) {
+            $selectedModules = ['crm', 'lms'];
+        }
+
+        $updated = $this->tenantModel->update($tenantId, [
+            'name' => $name,
+            'email' => $email,
+            'plan_name' => $planName,
+            'status' => $status,
+            'modules' => json_encode(array_values($selectedModules)),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if ($updated) {
+            Flash::success("Successfully updated Tenant #{$tenantId} settings & module permissions!");
+        } else {
+            Flash::error("Failed to update tenant settings.");
+        }
+
+        $this->redirect('/admin/tenants');
+    }
+
+    public function toggleStatus(Request $request, string $id): void
+    {
+        if (!$this->enforceSuperAdminAccess()) {
+            return;
+        }
+
+        $tenantId = (int)$id;
+        $tenant = $this->tenantModel->find($tenantId);
+
+        if ($tenant) {
+            $newStatus = $tenant['status'] === 'active' ? 'suspended' : 'active';
+            $this->tenantModel->update($tenantId, [
+                'status' => $newStatus,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            Flash::success("Tenant #{$tenantId} ('{$tenant['name']}') status changed to '{$newStatus}'!");
+        } else {
+            Flash::error("Tenant not found.");
+        }
+
+        $this->redirect('/admin/tenants');
+    }
+
+    public function delete(Request $request, string $id): void
+    {
+        if (!$this->enforceSuperAdminAccess()) {
+            return;
+        }
+
+        $tenantId = (int)$id;
+        if ($tenantId === 1) {
+            Flash::error("Primary Super Admin Tenant cannot be deleted.");
+            $this->redirect('/admin/tenants');
+            return;
+        }
+
+        $tenant = $this->tenantModel->find($tenantId);
+        if ($tenant) {
+            $this->tenantModel->delete($tenantId);
+            Flash::success("Tenant #{$tenantId} ('{$tenant['name']}') deleted successfully!");
+        } else {
+            Flash::error("Tenant not found.");
         }
 
         $this->redirect('/admin/tenants');

@@ -99,7 +99,36 @@ class PlanFeatureService
 
     public static function hasModuleAccess(string $moduleKey, ?int $tenantId = null): bool
     {
-        $plan = self::getTenantPlan($tenantId);
+        $id = $tenantId ?? TenantContext::getTenantId();
+        $tenantModel = new Tenant();
+        $tenant = $tenantModel->find($id);
+
+        if ($tenant && !empty($tenant['modules'])) {
+            $customModules = json_decode($tenant['modules'], true);
+            if (is_array($customModules)) {
+                return in_array(strtolower($moduleKey), array_map('strtolower', $customModules), true);
+            }
+        }
+
+        $plan = self::getTenantPlan($id);
         return in_array(strtolower($moduleKey), $plan['modules'], true) || $plan['plan_key'] === 'Enterprise';
+    }
+
+    public static function getTenantUsageStats(int $tenantId): array
+    {
+        $plan = self::getTenantPlan($tenantId);
+        $leadLimit = self::checkLimit('max_leads', $tenantId);
+        $courseLimit = self::checkLimit('max_courses', $tenantId);
+        $studentLimit = self::checkLimit('max_students', $tenantId);
+        
+        $revenue = (float)(Database::fetchOne("SELECT SUM(amount) as total FROM payments WHERE status = 'completed' AND tenant_id = :tid", ['tid' => $tenantId])['total'] ?? 0);
+
+        return [
+            'plan' => $plan,
+            'leads' => $leadLimit,
+            'courses' => $courseLimit,
+            'students' => $studentLimit,
+            'total_revenue' => $revenue
+        ];
     }
 }

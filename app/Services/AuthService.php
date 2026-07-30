@@ -48,9 +48,16 @@ class AuthService extends Service
             throw new ValidationException(['email' => ["Account is temporarily locked. Try again in {$remaining} minutes."]]);
         }
 
-        // Verify status
+        // Verify user status
         if ($user['status'] !== 'active') {
             throw new ValidationException(['email' => ['Your account is currently inactive or suspended.']]);
+        }
+
+        // Verify tenant status
+        $tenantModel = new \App\Models\Tenant();
+        $tenant = $tenantModel->find((int)($user['tenant_id'] ?? 1));
+        if ($tenant && $tenant['status'] === 'suspended') {
+            throw new ValidationException(['email' => ['Your academy subscription has been suspended by the platform administrator.']]);
         }
 
         // Verify password
