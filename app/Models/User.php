@@ -13,7 +13,9 @@ class User extends Model
 
     public function findByEmail(string $email): ?array
     {
-        return $this->findOneWhere('email', strtolower(trim($email)));
+        // Search globally across tenants for authentication since email is unique
+        $sql = "SELECT * FROM users WHERE email = :val LIMIT 1";
+        return Database::fetchOne($sql, ['val' => strtolower(trim($email))]);
     }
 
     public function getRoles(int $userId): array

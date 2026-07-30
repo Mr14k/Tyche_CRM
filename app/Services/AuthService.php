@@ -77,6 +77,11 @@ class AuthService extends Service
 
         $this->loginHistory->record((int)$user['id'], $email, $ip, $userAgent, 'success');
 
+        // Set active tenant session context
+        $tenantId = (int)($user['tenant_id'] ?? 1);
+        Session::set('tenant_id', $tenantId);
+        \App\Core\TenantContext::setTenantId($tenantId);
+
         // Log into session & regenerate session ID
         Session::regenerate();
         $roles = $this->userModel->getRoles((int)$user['id']);
@@ -84,6 +89,7 @@ class AuthService extends Service
 
         $sessionData = [
             'id' => (int)$user['id'],
+            'tenant_id' => $tenantId,
             'email' => $user['email'],
             'first_name' => $user['first_name'],
             'last_name' => $user['last_name'],
