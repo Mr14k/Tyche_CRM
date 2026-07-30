@@ -89,6 +89,13 @@ class LeadController extends Controller
 
     public function store(Request $request): void
     {
+        $limit = \App\Services\PlanFeatureService::checkLimit('max_leads');
+        if (!$limit['allowed']) {
+            Flash::error($limit['message']);
+            $this->redirect('/admin/crm/leads');
+            return;
+        }
+
         $data = $this->validate($request, [
             'first_name' => 'required',
             'phone' => 'required',

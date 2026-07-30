@@ -8,6 +8,7 @@ use App\Core\Controller;
 use App\Core\Request;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\PlanFeatureService;
 use App\Helpers\Flash;
 use App\Helpers\Security;
 
@@ -24,8 +25,11 @@ class TenantController extends Controller
     public function index(Request $request): void
     {
         $tenants = $this->tenantModel->all();
+        $plans = PlanFeatureService::getPlans();
+
         $this->view('admin.tenants.index', [
             'tenants' => $tenants,
+            'plans' => $plans,
             'title' => 'SaaS Pilot Client Academies'
         ], 'admin');
     }
@@ -82,9 +86,28 @@ class TenantController extends Controller
                 );
             }
 
-            Flash::success("Pilot Client Academy '{$data['name']}' provisioned successfully!");
+            Flash::success("Pilot Client Academy '{$data['name']}' provisioned under {$data['plan_name']} tier!");
         } else {
             Flash::error("Failed to provision new pilot client academy.");
+        }
+
+        $this->redirect('/admin/tenants');
+    }
+
+    public function updatePlan(Request $request, string $id): void
+    {
+        $tenantId = (int)$id;
+        $planName = Security::sanitize($request->get('plan_name', 'Bronze'));
+
+        $updated = $this->tenantModel->update($tenantId, [
+            'plan_name' => $planName,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if ($updated) {
+            Flash::success("Updated Tenant #{$tenantId} subscription tier to {$planName}!");
+        } else {
+            Flash::error("Failed to update subscription tier.");
         }
 
         $this->redirect('/admin/tenants');

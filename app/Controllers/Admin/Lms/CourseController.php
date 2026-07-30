@@ -52,6 +52,13 @@ class CourseController extends Controller
 
     public function store(Request $request): void
     {
+        $limit = \App\Services\PlanFeatureService::checkLimit('max_courses');
+        if (!$limit['allowed']) {
+            Flash::error($limit['message']);
+            $this->redirect('/admin/lms/courses');
+            return;
+        }
+
         $user = Session::get('user');
         $data = $this->validate($request, [
             'title' => 'required|min:3',

@@ -175,6 +175,7 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
     // Multi-Tenant Pilot Academy Management
     $router->get('/tenants', [TenantController::class, 'index'])->name('admin.tenants')->middleware('role:Admin');
     $router->post('/tenants', [TenantController::class, 'store'])->middleware('csrf')->middleware('role:Admin');
+    $router->post('/tenants/{id}/plan', [TenantController::class, 'updatePlan'])->middleware('csrf')->middleware('role:Admin');
 
     // User & RBAC Management
     $router->get('/users', [UserManagementController::class, 'index'])->name('admin.users')->middleware('role:Admin');
