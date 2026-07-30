@@ -48,7 +48,9 @@ class SaasCommandCenterController extends Controller
         $actualLeads = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM leads")['c'] ?? 0);
         $actualStudents = (int)(Database::fetchOne("SELECT COUNT(*) as c FROM users")['c'] ?? 0);
         $actualRevenue = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payments WHERE status = 'completed'")['s'] ?? 0);
-        $paymentsToday = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payments WHERE status = 'completed' AND DATE(created_at) = CURDATE()")['s'] ?? 0);
+        
+        // Corrected timestamp column to payment_date
+        $paymentsToday = (float)(Database::fetchOne("SELECT SUM(amount) as s FROM payments WHERE status = 'completed' AND DATE(payment_date) = CURDATE()")['s'] ?? 0);
 
         // Enterprise Global Command Telemetry (combines live DB values + high-volume scale metrics)
         $telemetry = [
