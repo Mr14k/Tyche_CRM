@@ -8,10 +8,11 @@ use App\Core\Middleware;
 use App\Core\Request;
 use App\Core\TenantContext;
 use App\Models\Tenant;
+use Closure;
 
 class TenantMiddleware implements Middleware
 {
-    public function handle(Request $request, callable $next, array $args = []): mixed
+    public function handle(Request $request, Closure $next, array $params = []): mixed
     {
         $tenantModel = new Tenant();
         $tenantId = 1;
