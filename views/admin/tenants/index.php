@@ -12,17 +12,7 @@
     </button>
 </div>
 
-<?php if (\App\Helpers\Flash::has('success')): ?>
-    <div class="alert alert-success border-0 shadow-sm mb-4">
-        <?= \App\Helpers\Flash::get('success') ?>
-    </div>
-<?php endif; ?>
-
-<?php if (\App\Helpers\Flash::has('error')): ?>
-    <div class="alert alert-danger border-0 shadow-sm mb-4">
-        <?= \App\Helpers\Flash::get('error') ?>
-    </div>
-<?php endif; ?>
+<?= \App\Helpers\Flash::render() ?>
 
 <div class="card border-0 shadow-sm rounded-lg overflow-hidden mb-4">
     <div class="card-header bg-white py-3">

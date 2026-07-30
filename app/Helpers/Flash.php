@@ -30,24 +30,54 @@ class Flash
         self::set('info', $message);
     }
 
-    public static function get(): array
+    public static function has(?string $type = null): bool
     {
         $flashes = Session::get('_flash_messages', []);
-        Session::remove('_flash_messages');
-        return $flashes;
+        if (empty($flashes)) {
+            return false;
+        }
+        if ($type === null) {
+            return true;
+        }
+        foreach ($flashes as $f) {
+            if (isset($f['type']) && ($f['type'] === $type || ($type === 'error' && $f['type'] === 'danger'))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function get(?string $type = null): mixed
+    {
+        $flashes = Session::get('_flash_messages', []);
+        if ($type === null) {
+            Session::remove('_flash_messages');
+            return $flashes;
+        }
+        $matching = [];
+        $remaining = [];
+        foreach ($flashes as $f) {
+            if (isset($f['type']) && ($f['type'] === $type || ($type === 'error' && $f['type'] === 'danger'))) {
+                $matching[] = $f['message'];
+            } else {
+                $remaining[] = $f;
+            }
+        }
+        Session::set('_flash_messages', $remaining);
+        return !empty($matching) ? implode(', ', $matching) : null;
     }
 
     public static function render(): string
     {
         $flashes = self::get();
-        if (empty($flashes)) {
+        if (empty($flashes) || !is_array($flashes)) {
             return '';
         }
 
         $html = '<div class="flash-container mb-3">';
         foreach ($flashes as $f) {
-            $type = Security::e($f['type']);
-            $msg = Security::e($f['message']);
+            $type = Security::e($f['type'] ?? 'info');
+            $msg = Security::e($f['message'] ?? '');
             $html .= "<div class=\"alert alert-{$type} alert-dismissible fade show\" role=\"alert\">
                         {$msg}
                         <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>
