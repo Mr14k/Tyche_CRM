@@ -466,6 +466,42 @@
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <?php if (($_SESSION['user']['tenant_id'] ?? 1) === 1): ?>
+                    <?php
+                        $tenantModel = new \App\Models\Tenant();
+                        $allTenants = $tenantModel->all();
+                        $activeTenantId = \App\Core\TenantContext::getTenantId();
+                        $activeTenantData = \App\Core\TenantContext::getTenantData();
+                        $activeTenantName = $activeTenantData['name'] ?? ($activeTenantId === 1 ? 'Primary Academy (Global)' : "Tenant #{$activeTenantId}");
+                    ?>
+                    <div class="dropdown">
+                        <button class="btn btn-sm rounded-pill px-3 font-weight-bold d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" style="background: rgba(217,174,104,0.15); color: #D9AE68; border: 1px solid #D9AE68;">
+                            <i class="bi bi-building"></i>
+                            <span>Workspace: <strong><?= Security::e($activeTenantName) ?></strong></span>
+                            <i class="bi bi-chevron-down ms-1" style="font-size: 11px;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg py-2" style="background: #161F2B; border: 1px solid rgba(243,238,226,0.2); min-width: 250px;">
+                            <li><h6 class="dropdown-header font-weight-bold text-uppercase" style="color: #D9AE68; font-size: 11px; letter-spacing: 0.05em;">Super Admin Workspace Switcher</h6></li>
+                            <?php foreach ($allTenants as $t): ?>
+                                <li>
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center py-2 px-3 <?= $activeTenantId == $t['id'] ? 'active bg-warning text-dark font-weight-bold' : 'text-white' ?>" href="<?= Url::to('/dashboard?t=' . $t['subdomain']) ?>">
+                                        <span>#<?= $t['id'] ?> — <?= Security::e($t['name']) ?></span>
+                                        <span class="badge ms-2 font-monospace" style="font-size: 10px; background: rgba(255,255,255,0.15);"><?= Security::e($t['subdomain']) ?></span>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php else: ?>
+                    <?php
+                        $activeTenantData = \App\Core\TenantContext::getTenantData();
+                        $academyName = $activeTenantData['name'] ?? 'My Academy';
+                    ?>
+                    <span class="badge px-3 py-2 font-weight-bold" style="background: rgba(59,130,246,0.15); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3); font-size: 12px;">
+                        <i class="bi bi-building mr-1"></i><?= Security::e($academyName) ?>
+                    </span>
+                <?php endif; ?>
+
                 <?php 
                     $currUser = \App\Core\Session::get('user'); 
                     $notifService = new \App\Services\NotificationService();

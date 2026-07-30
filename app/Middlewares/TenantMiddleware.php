@@ -18,7 +18,7 @@ class TenantMiddleware implements Middleware
         $tenantId = 1;
         $tenantData = null;
 
-        // Security Enforcement: If user is logged in and NOT Super SaaS Admin (Tenant 1), lock to assigned tenant_id
+        // Security Enforcement: If user is logged in and NOT Super SaaS Admin (Tenant 1), lock strictly to assigned tenant_id
         if (!empty($_SESSION['user']['tenant_id']) && (int)$_SESSION['user']['tenant_id'] !== 1) {
             $tenantId = (int)$_SESSION['user']['tenant_id'];
             $tenantData = $tenantModel->find($tenantId);
@@ -26,13 +26,14 @@ class TenantMiddleware implements Middleware
             return $next($request);
         }
 
-        // 1. Check for explicit query override (?tenant=subdomain or ?t=subdomain) — Super Admin or Guest
+        // 1. Check for explicit query override (?tenant=subdomain or ?t=subdomain) — Super Admin Workspace Switcher
         $override = $request->get('tenant') ?? $request->get('t');
         if ($override) {
             $matched = $tenantModel->findBySubdomain((string)$override);
             if ($matched && $matched['status'] === 'active') {
                 $tenantId = (int)$matched['id'];
                 $tenantData = $matched;
+                $_SESSION['tenant_id'] = $tenantId;
             }
         } else {
             // 2. Check HTTP Host header (e.g., alpha.tycheapp.com -> alpha)
@@ -58,6 +59,10 @@ class TenantMiddleware implements Middleware
                     $tenantData = $matched;
                 }
             }
+        }
+
+        if ($tenantData === null) {
+            $tenantData = $tenantModel->find($tenantId);
         }
 
         // Set global request tenant context
