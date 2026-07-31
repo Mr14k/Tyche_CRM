@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Service;
+use App\Core\TenantContext;
 use App\Models\JobPosting;
 use App\Models\JobApplication;
 use App\Models\Resume;
@@ -14,9 +15,11 @@ class PlacementService extends Service
 {
     public function applyForJob(int $jobId, int $userId, ?string $coverNote = null): array
     {
-        $existing = Database::fetchOne("SELECT * FROM job_applications WHERE job_id = :job_id AND user_id = :user_id", [
+        $tid = TenantContext::getTenantId();
+        $existing = Database::fetchOne("SELECT * FROM job_applications WHERE job_id = :job_id AND user_id = :user_id AND tenant_id = :tid", [
             'job_id' => $jobId,
-            'user_id' => $userId
+            'user_id' => $userId,
+            'tid' => $tid
         ]);
 
         if ($existing) {

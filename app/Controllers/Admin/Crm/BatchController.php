@@ -7,6 +7,7 @@ namespace App\Controllers\Admin\Crm;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Database;
+use App\Core\TenantContext;
 use App\Models\Batch;
 use App\Helpers\Flash;
 use App\Helpers\Url;
@@ -23,8 +24,9 @@ class BatchController extends Controller
 
     public function index(Request $request): void
     {
+        $tid = TenantContext::getTenantId();
         $batches = $this->batchModel->getBatchesWithCourse();
-        $courses = Database::fetchAll("SELECT id, title FROM courses ORDER BY title ASC");
+        $courses = Database::fetchAll("SELECT id, title FROM courses WHERE tenant_id = :tid ORDER BY title ASC", ['tid' => $tid]);
 
         $this->view('admin.crm.batches.index', [
             'pageTitle' => 'Course Batch Scheduling & Seats Management — Tyche Admin',

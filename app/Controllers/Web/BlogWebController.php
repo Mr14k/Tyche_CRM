@@ -6,6 +6,7 @@ namespace App\Controllers\Web;
 
 use App\Core\Controller;
 use App\Core\Request;
+use App\Core\TenantContext;
 use App\Models\BlogPost;
 use App\Models\CaseStudy;
 use App\Models\Event;
@@ -38,7 +39,8 @@ class BlogWebController extends Controller
         }
 
         // Increment views count
-        \App\Core\Database::execute("UPDATE blog_posts SET views_count = views_count + 1 WHERE id = :id", ['id' => $post['id']]);
+        $tid = TenantContext::getTenantId();
+        \App\Core\Database::execute("UPDATE blog_posts SET views_count = views_count + 1 WHERE id = :id AND tenant_id = :tid", ['id' => $post['id'], 'tid' => $tid]);
 
         $this->view('web.blog.show', [
             'pageTitle' => $post['title'] . ' — Tyche Academy Blog',

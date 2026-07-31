@@ -7,6 +7,7 @@ namespace App\Controllers\Student;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Session;
+use App\Core\TenantContext;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Helpers\Flash;
@@ -27,17 +28,19 @@ class StudentAssignmentController extends Controller
     public function index(Request $request): void
     {
         $user = Session::get('user');
+        $tid = TenantContext::getTenantId();
+
         $submissions = \App\Core\Database::fetchAll("SELECT sub.*, a.title as assignment_title, a.max_marks, c.title as course_title 
             FROM assignment_submissions sub
             JOIN assignments a ON sub.assignment_id = a.id
             JOIN courses c ON a.course_id = c.id
-            WHERE sub.user_id = :uid ORDER BY sub.submitted_at DESC", ['uid' => $user['id']]);
+            WHERE sub.user_id = :uid AND sub.tenant_id = :tid ORDER BY sub.submitted_at DESC", ['uid' => $user['id'], 'tid' => $tid]);
 
         $assignments = \App\Core\Database::fetchAll("SELECT a.*, c.title as course_title 
             FROM assignments a
             JOIN course_enrollments ce ON a.course_id = ce.course_id
             JOIN courses c ON a.course_id = c.id
-            WHERE ce.user_id = :uid", ['uid' => $user['id']]);
+            WHERE ce.user_id = :uid AND a.tenant_id = :tid", ['uid' => $user['id'], 'tid' => $tid]);
 
         $this->view('student.assignments', [
             'pageTitle' => 'Assignments & Capstone Projects — Tyche Academy',

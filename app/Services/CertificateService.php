@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Service;
+use App\Core\TenantContext;
 use App\Models\Certificate;
 use App\Models\CourseEnrollment;
 use App\Models\LessonProgress;
@@ -21,10 +22,13 @@ class CertificateService extends Service
 
     public function issueCertificateIfEligible(int $userId, int $courseId): ?array
     {
+        $tid = TenantContext::getTenantId();
+
         // Check existing certificate
-        $existing = Database::fetchOne("SELECT * FROM certificates WHERE user_id = :uid AND course_id = :cid LIMIT 1", [
+        $existing = Database::fetchOne("SELECT * FROM certificates WHERE user_id = :uid AND course_id = :cid AND tenant_id = :tid LIMIT 1", [
             'uid' => $userId,
-            'cid' => $courseId
+            'cid' => $courseId,
+            'tid' => $tid
         ]);
 
         if ($existing) {
@@ -53,9 +57,10 @@ class CertificateService extends Service
         ]);
 
         // Update enrollment status to completed
-        Database::execute("UPDATE course_enrollments SET status = 'completed', completed_at = NOW() WHERE user_id = :uid AND course_id = :cid", [
+        Database::execute("UPDATE course_enrollments SET status = 'completed', completed_at = NOW() WHERE user_id = :uid AND course_id = :cid AND tenant_id = :tid", [
             'uid' => $userId,
-            'cid' => $courseId
+            'cid' => $courseId,
+            'tid' => $tid
         ]);
 
         return $this->certModel->find((int)$certId);

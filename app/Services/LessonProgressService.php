@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Service;
+use App\Core\TenantContext;
 use App\Models\CourseLesson;
 use App\Models\CourseEnrollment;
 use App\Models\LessonProgress;
@@ -42,13 +43,16 @@ class LessonProgressService extends Service
             return true;
         }
 
+        $tid = TenantContext::getTenantId();
+
         // Sequential Lesson Locking: Check if previous lesson in sequence is completed
         $prevLesson = Database::fetchOne("SELECT cl.id FROM course_lessons cl
             JOIN course_chapters ch ON cl.chapter_id = ch.id
             JOIN course_modules cm ON ch.module_id = cm.id
-            WHERE cm.course_id = :cid AND (cm.sort_order < (SELECT cm2.sort_order FROM course_modules cm2 JOIN course_chapters ch2 ON ch2.module_id = cm2.id WHERE ch2.id = :chid1) OR (ch.id = :chid2 AND cl.sort_order < :sort))
+            WHERE cm.course_id = :cid AND cm.tenant_id = :tid AND (cm.sort_order < (SELECT cm2.sort_order FROM course_modules cm2 JOIN course_chapters ch2 ON ch2.module_id = cm2.id WHERE ch2.id = :chid1) OR (ch.id = :chid2 AND cl.sort_order < :sort))
             ORDER BY cm.sort_order DESC, ch.sort_order DESC, cl.sort_order DESC LIMIT 1", [
                 'cid' => $lesson['course_id'],
+                'tid' => $tid,
                 'chid1' => $lesson['chapter_id'],
                 'chid2' => $lesson['chapter_id'],
                 'sort' => $lesson['sort_order']
@@ -59,9 +63,10 @@ class LessonProgressService extends Service
             return true;
         }
 
-        $prevProgress = Database::fetchOne("SELECT is_completed FROM lesson_progress WHERE user_id = :uid AND lesson_id = :lid LIMIT 1", [
+        $prevProgress = Database::fetchOne("SELECT is_completed FROM lesson_progress WHERE user_id = :uid AND lesson_id = :lid AND tenant_id = :tid LIMIT 1", [
             'uid' => $userId,
-            'lid' => $prevLesson['id']
+            'lid' => $prevLesson['id'],
+            'tid' => $tid
         ]);
 
         return $prevProgress && (int)$prevProgress['is_completed'] === 1;

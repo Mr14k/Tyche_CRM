@@ -6,6 +6,7 @@ namespace App\Controllers\Admin\Lms;
 
 use App\Core\Controller;
 use App\Core\Request;
+use App\Core\TenantContext;
 use App\Models\CourseEnrollment;
 use App\Models\Course;
 use App\Models\User;
@@ -24,11 +25,13 @@ class EnrollmentController extends Controller
 
     public function index(Request $request): void
     {
+        $tid = TenantContext::getTenantId();
         $enrollments = \App\Core\Database::fetchAll("SELECT ce.*, u.first_name, u.last_name, u.email, c.title as course_title, c.code 
             FROM course_enrollments ce
             JOIN users u ON ce.user_id = u.id
             JOIN courses c ON ce.course_id = c.id
-            ORDER BY ce.enrolled_at DESC");
+            WHERE ce.tenant_id = :tid
+            ORDER BY ce.enrolled_at DESC", ['tid' => $tid]);
 
         $courses = (new Course())->all();
         $students = (new User())->all();

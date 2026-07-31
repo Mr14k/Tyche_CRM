@@ -8,6 +8,7 @@ use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Session;
 use App\Core\Database;
+use App\Core\TenantContext;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadActivity;
@@ -19,22 +20,26 @@ class CounselorController extends Controller
     public function index(Request $request): void
     {
         $user = Session::get('user');
+        $tid = TenantContext::getTenantId();
         
         $followups = Database::fetchAll("SELECT f.*, l.first_name, l.last_name, l.phone, l.lead_code 
             FROM lead_followups f
             JOIN leads l ON f.lead_id = l.id
-            ORDER BY f.created_at DESC");
+            WHERE f.tenant_id = :tid
+            ORDER BY f.created_at DESC", ['tid' => $tid]);
 
         $demos = Database::fetchAll("SELECT d.*, l.first_name, l.last_name, c.title as course_title 
             FROM demo_classes d
             JOIN leads l ON d.lead_id = l.id
             JOIN courses c ON d.course_id = c.id
-            ORDER BY d.scheduled_at ASC");
+            WHERE d.tenant_id = :tid
+            ORDER BY d.scheduled_at ASC", ['tid' => $tid]);
 
         // Fetch all active leads for select dropdown
         $leads = Database::fetchAll("SELECT id, lead_code, first_name, last_name, phone, status 
             FROM leads 
-            ORDER BY created_at DESC");
+            WHERE tenant_id = :tid
+            ORDER BY created_at DESC", ['tid' => $tid]);
 
         $this->view('admin.crm.counselor', [
             'pageTitle' => 'Counselor Sales Desk & Demos — Tyche Academy',
@@ -47,6 +52,7 @@ class CounselorController extends Controller
     public function storeFollowup(Request $request): void
     {
         $user = Session::get('user');
+        $tid = TenantContext::getTenantId();
         $data = $this->validate($request, [
             'lead_id' => 'required',
             'notes' => 'required'
@@ -96,7 +102,7 @@ class CounselorController extends Controller
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
         } else {
-            Database::execute("UPDATE leads SET last_interaction_at = NOW(), updated_at = NOW() WHERE id = :id", ['id' => $leadId]);
+            Database::execute("UPDATE leads SET last_interaction_at = NOW(), updated_at = NOW() WHERE id = :id AND tenant_id = :tid", ['id' => $leadId, 'tid' => $tid]);
         }
 
         Flash::success("Follow-up call logged for {$lead['first_name']} {$lead['last_name']} ({$lead['lead_code']}).");

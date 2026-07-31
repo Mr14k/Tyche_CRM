@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Core\Service;
 use App\Core\Database;
+use App\Core\TenantContext;
 use App\Models\LeadFollowup;
 use App\Models\LeadActivity;
 
@@ -37,6 +38,8 @@ class LeadFollowupEngine extends Service
 
     public function logInteraction(int $leadId, int $userId, string $type, string $outcome, ?string $notes = null, ?int $durationSeconds = null): void
     {
+        $tid = TenantContext::getTenantId();
+
         $this->activityModel->create([
             'lead_id' => $leadId,
             'user_id' => $userId,
@@ -47,7 +50,7 @@ class LeadFollowupEngine extends Service
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
-        Database::execute("UPDATE leads SET last_interaction_at = NOW(), updated_at = NOW() WHERE id = :id", ['id' => $leadId]);
+        Database::execute("UPDATE leads SET last_interaction_at = NOW(), updated_at = NOW() WHERE id = :id AND tenant_id = :tid", ['id' => $leadId, 'tid' => $tid]);
     }
 
     public function checkAndFlagSlaBreaches(): int

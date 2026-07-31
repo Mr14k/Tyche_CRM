@@ -6,6 +6,7 @@ namespace App\Controllers\Admin\Finance;
 
 use App\Core\Controller;
 use App\Core\Request;
+use App\Core\TenantContext;
 use App\Models\Payment;
 use App\Models\Admission;
 use App\Services\InvoiceService;
@@ -26,6 +27,7 @@ class PaymentController extends Controller
 
     public function index(Request $request): void
     {
+        $tid = TenantContext::getTenantId();
         $payments = $this->paymentModel->getPaymentsWithDetails();
         $admissions = (new Admission())->all();
 
@@ -34,7 +36,7 @@ class PaymentController extends Controller
         $invoicesMap = [];
         if (!empty($paymentIds)) {
             $inList = implode(',', array_map('intval', $paymentIds));
-            $invRows = \App\Core\Database::fetchAll("SELECT id, payment_id, invoice_number FROM invoices WHERE payment_id IN ({$inList})");
+            $invRows = \App\Core\Database::fetchAll("SELECT id, payment_id, invoice_number FROM invoices WHERE payment_id IN ({$inList}) AND tenant_id = :tid", ['tid' => $tid]);
             foreach ($invRows as $ir) {
                 $invoicesMap[(int)$ir['payment_id']] = $ir;
             }
@@ -88,13 +90,14 @@ class PaymentController extends Controller
 
     public function generateInvoice(Request $request, string $id): void
     {
+        $tid = TenantContext::getTenantId();
         $payment = $this->paymentModel->find((int)$id);
         if (!$payment) {
             throw new NotFoundException("Payment transaction not found.");
         }
 
         // Check if invoice already exists
-        $existingInvoice = \App\Core\Database::fetchOne("SELECT id FROM invoices WHERE payment_id = :pid", ['pid' => $payment['id']]);
+        $existingInvoice = \App\Core\Database::fetchOne("SELECT id FROM invoices WHERE payment_id = :pid AND tenant_id = :tid", ['pid' => $payment['id'], 'tid' => $tid]);
         if ($existingInvoice) {
             Flash::info("GST Tax Invoice already exists for this payment transaction.");
             $this->redirect(Url::to('/admin/finance/invoices/' . $existingInvoice['id']));

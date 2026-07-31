@@ -7,6 +7,7 @@ namespace App\Controllers\Student;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Session;
+use App\Core\TenantContext;
 use App\Models\Certificate;
 use App\Services\CertificateService;
 use App\Helpers\Flash;
@@ -17,10 +18,11 @@ class StudentCertificateController extends Controller
     public function index(Request $request): void
     {
         $user = Session::get('user');
+        $tid = TenantContext::getTenantId();
         $certificates = \App\Core\Database::fetchAll("SELECT cert.*, c.title as course_title, c.code as course_code 
             FROM certificates cert
             JOIN courses c ON cert.course_id = c.id
-            WHERE cert.user_id = :uid", ['uid' => $user['id']]);
+            WHERE cert.user_id = :uid AND cert.tenant_id = :tid", ['uid' => $user['id'], 'tid' => $tid]);
 
         $this->view('student.certificates', [
             'pageTitle' => 'My Earned Certificates — Tyche Academy',
