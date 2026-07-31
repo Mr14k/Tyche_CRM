@@ -12,30 +12,30 @@
 <div class="row g-3 mb-4">
     <div class="col-md-3">
         <div class="card-custom p-4 border-start border-warning border-4">
-            <div class="text-muted small text-uppercase font-monospace">Total Platform Revenue</div>
+            <div class="text-slate-400 small text-uppercase font-monospace" style="color: #CBD5E1 !important;">Total Platform Revenue</div>
             <div class="display-6 font-monospace text-warning mt-2">₹ <?= number_format($metrics['total_revenue'], 2) ?></div>
-            <div class="text-secondary small mt-1"><i class="bi bi-currency-rupee"></i> 18% GST Compliant</div>
+            <div class="small mt-1" style="color: #94A3B8 !important;"><i class="bi bi-currency-rupee"></i> 18% GST Compliant</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card-custom p-4 border-start border-primary border-4">
-            <div class="text-muted small text-uppercase font-monospace">Enrolled Students</div>
+            <div class="text-slate-400 small text-uppercase font-monospace" style="color: #CBD5E1 !important;">Enrolled Students</div>
             <div class="display-6 font-monospace text-primary mt-2"><?= $metrics['total_students'] ?></div>
-            <div class="text-secondary small mt-1"><i class="bi bi-mortarboard-fill"></i> Active Accounts</div>
+            <div class="small mt-1" style="color: #94A3B8 !important;"><i class="bi bi-mortarboard-fill"></i> Active Accounts</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card-custom p-4 border-start border-info border-4">
-            <div class="text-muted small text-uppercase font-monospace">Lead Conversion Rate</div>
+            <div class="text-slate-400 small text-uppercase font-monospace" style="color: #CBD5E1 !important;">Lead Conversion Rate</div>
             <div class="display-6 font-monospace text-info mt-2"><?= $metrics['conversion_rate'] ?>%</div>
-            <div class="text-secondary small mt-1"><i class="bi bi-funnel-fill"></i> CRM Pipeline</div>
+            <div class="small mt-1" style="color: #94A3B8 !important;"><i class="bi bi-funnel-fill"></i> CRM Pipeline</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card-custom p-4 border-start border-success border-4">
-            <div class="text-muted small text-uppercase font-monospace">Verified Certificates</div>
+            <div class="text-slate-400 small text-uppercase font-monospace" style="color: #CBD5E1 !important;">Verified Certificates</div>
             <div class="display-6 font-monospace text-success mt-2"><?= $metrics['total_certificates'] ?></div>
-            <div class="text-secondary small mt-1"><i class="bi bi-qr-code"></i> SHA-256 Validated</div>
+            <div class="small mt-1" style="color: #94A3B8 !important;"><i class="bi bi-qr-code"></i> SHA-256 Validated</div>
         </div>
     </div>
 </div>
@@ -68,7 +68,7 @@
                             <td class="font-monospace text-warning small" style="background:#161F2B !important;"><?= Security::e($p['payment_reference']) ?></td>
                             <td style="background:#161F2B !important;">
                                 <div class="fw-bold text-white"><?= Security::e($p['first_name'] . ' ' . $p['last_name']) ?></div>
-                                <div class="text-muted small font-monospace"><?= Security::e($p['email']) ?></div>
+                                <div class="small font-monospace" style="color: #94A3B8 !important;"><?= Security::e($p['email']) ?></div>
                             </td>
                             <td style="background:#161F2B !important; color:#F3EEE2 !important;"><span class="badge bg-secondary font-monospace"><?= Security::e($p['course_title']) ?></span></td>
                             <td style="background:#161F2B !important;" class="font-monospace text-warning fw-bold">₹ <?= number_format((float)$p['amount'], 2) ?></td>
@@ -80,7 +80,7 @@
                                     <span class="badge bg-warning text-dark"><?= ucfirst(Security::e($p['status'])) ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td style="background:#161F2B !important;" class="text-muted small font-monospace"><?= Format::date($p['payment_date'], 'd M Y, H:i') ?></td>
+                            <td style="background:#161F2B !important;" class="small font-monospace" style="color: #94A3B8 !important;"><?= Format::date($p['payment_date'], 'd M Y, H:i') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

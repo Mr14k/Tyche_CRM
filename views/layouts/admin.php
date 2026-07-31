@@ -29,6 +29,22 @@ use App\Helpers\Security;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
         }
+        /* High Contrast Typography Overrides for Dark Theme */
+        .text-muted, small.text-muted, div.text-muted, span.text-muted, td.text-muted {
+            color: #CBD5E1 !important; /* High contrast light grey */
+        }
+        .text-secondary {
+            color: #94A3B8 !important;
+        }
+        .text-slate-400 {
+            color: #CBD5E1 !important;
+        }
+        .card-custom {
+            background: #161F2B !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 12px;
+            color: #F3EEE2;
+        }
         #spa-loader-bar {
             position: fixed;
             top: 0;
