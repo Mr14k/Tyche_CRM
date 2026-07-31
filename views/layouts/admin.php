@@ -29,7 +29,7 @@ use App\Helpers\Security;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
         }
-        /* High Contrast Typography Overrides for Dark Theme */
+        /* Comprehensive Dark Theme Global Overrides */
         .text-muted, small.text-muted, div.text-muted, span.text-muted, td.text-muted {
             color: #CBD5E1 !important; /* High contrast light grey */
         }
@@ -39,11 +39,51 @@ use App\Helpers\Security;
         .text-slate-400 {
             color: #CBD5E1 !important;
         }
-        .card-custom {
-            background: #161F2B !important;
+        .card-custom, .card {
+            background-color: #161F2B !important;
             border: 1px solid var(--line) !important;
             border-radius: 12px;
-            color: #F3EEE2;
+            color: #F3EEE2 !important;
+        }
+        /* Enforce Dark Table Styling Across All Admin Modules */
+        table, table.table, .table > :not(caption) > * > * {
+            background-color: #161F2B !important;
+            color: #F3EEE2 !important;
+            border-color: rgba(243,238,226,0.08) !important;
+            box-shadow: none !important;
+        }
+        table thead, table thead tr, table thead th, .table > thead > tr > th {
+            background-color: #0F1620 !important;
+            color: #D9AE68 !important;
+            border-bottom: 1px solid rgba(243,238,226,0.14) !important;
+        }
+        table.table-hover tbody tr:hover, table.table-hover tbody tr:hover td {
+            background-color: #1C2736 !important;
+            color: #FFFFFF !important;
+        }
+        .modal-content {
+            background-color: #161F2B !important;
+            color: #F3EEE2 !important;
+            border: 1px solid rgba(243,238,226,0.2) !important;
+        }
+        .modal-header, .card-header {
+            background-color: #0F1620 !important;
+            border-bottom: 1px solid rgba(243,238,226,0.14) !important;
+        }
+        .modal-footer, .card-footer {
+            background-color: #0F1620 !important;
+            border-top: 1px solid rgba(243,238,226,0.14) !important;
+        }
+        .form-control, .form-select {
+            background-color: #0F1620 !important;
+            color: #F8FAFC !important;
+            border: 1px solid rgba(243,238,226,0.2) !important;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #0F1620 !important;
+            color: #FFFFFF !important;
+            border-color: #D9AE68 !important;
+            box-shadow: 0 0 0 0.2rem rgba(217,174,104,0.25) !important;
         }
         #spa-loader-bar {
             position: fixed;

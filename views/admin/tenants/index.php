@@ -56,28 +56,28 @@
     </div>
 </div>
 
-<div class="card border-0 shadow-sm rounded-lg overflow-hidden mb-4" style="background: #161F2B; border: 1px solid rgba(243,238,226,0.14) !important;">
-    <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center" style="background: #0F1620; border-bottom: 1px solid rgba(243,238,226,0.14);">
+<div class="card border-0 shadow-sm rounded-lg overflow-hidden mb-4" style="background: #161F2B !important; border: 1px solid rgba(243,238,226,0.14) !important;">
+    <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center" style="background: #0F1620 !important; border-bottom: 1px solid rgba(243,238,226,0.14);">
         <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-building text-warning mr-2"></i>Active Pilot Academies (<?= count($tenants) ?>)</h6>
-        <span class="badge badge-warning px-3 py-1 font-weight-bold" style="background: #D9AE68; color: #0F1620;">Multi-Tenant SaaS</span>
+        <span class="badge badge-warning px-3 py-1 font-weight-bold" style="background: #D9AE68 !important; color: #0F1620 !important;">Multi-Tenant SaaS</span>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="color: #F3EEE2;">
-                <thead style="background: #0F1620; color: #D9AE68; border-bottom: 1px solid rgba(243,238,226,0.14);">
+    <div class="card-body p-0" style="background: #161F2B !important;">
+        <div class="table-responsive" style="background: #161F2B !important;">
+            <table class="table table-hover align-middle mb-0" style="background: #161F2B !important; color: #F3EEE2 !important;">
+                <thead style="background: #0F1620 !important; color: #D9AE68 !important; border-bottom: 1px solid rgba(243,238,226,0.14);">
                     <tr>
-                        <th class="border-0 px-4 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68;">ID & Academy Name</th>
-                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68;">Subdomain</th>
-                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68;">Subscription Tier</th>
-                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68;">Usage & Metrics</th>
-                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68;">Status</th>
-                        <th class="border-0 py-3 text-right pr-4 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68;">Control Actions</th>
+                        <th class="border-0 px-4 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68 !important; background: #0F1620 !important;">ID & Academy Name</th>
+                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68 !important; background: #0F1620 !important;">Subdomain</th>
+                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68 !important; background: #0F1620 !important;">Subscription Tier</th>
+                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68 !important; background: #0F1620 !important;">Usage & Metrics</th>
+                        <th class="border-0 py-3 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68 !important; background: #0F1620 !important;">Status</th>
+                        <th class="border-0 py-3 text-right pr-4 text-uppercase font-weight-bold" style="font-size: 12px; color: #D9AE68 !important; background: #0F1620 !important;">Control Actions</th>
                     </tr>
                 </thead>
-                <tbody style="background: #161F2B;">
+                <tbody style="background: #161F2B !important;">
                     <?php if (empty($tenants)): ?>
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-slate-400" style="color: #94A3B8;">No pilot academies found.</td>
+                            <td colspan="6" class="text-center py-4 text-slate-400" style="color: #CBD5E1 !important; background: #161F2B !important;">No pilot academies found.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($tenants as $t): ?>
@@ -86,21 +86,21 @@
                                 $activeModules = !empty($t['modules']) ? json_decode($t['modules'], true) : ['crm', 'lms'];
                                 if (!is_array($activeModules)) $activeModules = ['crm', 'lms'];
                             ?>
-                            <tr style="border-bottom: 1px solid rgba(243,238,226,0.08);">
-                                <td class="px-4 py-3">
+                            <tr style="border-bottom: 1px solid rgba(243,238,226,0.08); background: #161F2B !important;">
+                                <td class="px-4 py-3" style="background: #161F2B !important;">
                                     <div class="font-weight-bold text-white mb-0" style="font-size: 15px;">#<?= $t['id'] ?> — <?= \App\Helpers\Security::e($t['name']) ?></div>
-                                    <small style="color: #94A3B8;"><i class="fas fa-envelope mr-1" style="color: #D9AE68;"></i><?= \App\Helpers\Security::e($t['email']) ?></small>
+                                    <small style="color: #CBD5E1 !important;"><i class="fas fa-envelope mr-1" style="color: #D9AE68;"></i><?= \App\Helpers\Security::e($t['email']) ?></small>
                                 </td>
-                                <td>
-                                    <span class="badge px-3 py-1 font-monospace" style="background: rgba(59,130,246,0.15); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3);">
+                                <td style="background: #161F2B !important;">
+                                    <span class="badge px-3 py-1 font-monospace" style="background: rgba(59,130,246,0.2) !important; color: #60A5FA !important; border: 1px solid rgba(59,130,246,0.4) !important;">
                                         <?= \App\Helpers\Security::e($t['subdomain']) ?>.localhost
                                     </span>
                                 </td>
-                                <td>
+                                <td style="background: #161F2B !important;">
                                     <form action="<?= \App\Helpers\Url::to('/admin/tenants/' . $t['id'] . '/plan') ?>" method="POST" class="d-inline-flex">
                                         <input type="hidden" name="_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
                                         <input type="hidden" name="csrf_token" value="<?= \App\Helpers\Security::csrfToken() ?>">
-                                        <select name="plan_name" class="form-control form-control-sm rounded-pill font-weight-bold" onchange="this.form.submit()" style="background: #0F1620; color: #F8FAFC; border: 1px solid rgba(243,238,226,0.2);">
+                                        <select name="plan_name" class="form-control form-control-sm rounded-pill font-weight-bold" onchange="this.form.submit()" style="background: #0F1620 !important; color: #F8FAFC !important; border: 1px solid rgba(243,238,226,0.2) !important;">
                                             <option value="Bronze" <?= $t['plan_name'] === 'Bronze' ? 'selected' : '' ?>>Bronze (100 Leads)</option>
                                             <option value="Silver" <?= $t['plan_name'] === 'Silver' ? 'selected' : '' ?>>Silver (1,000 Leads)</option>
                                             <option value="Gold" <?= $t['plan_name'] === 'Gold' ? 'selected' : '' ?>>Gold (10,000 Leads)</option>
@@ -108,22 +108,22 @@
                                         </select>
                                     </form>
                                 </td>
-                                <td>
+                                <td style="background: #161F2B !important;">
                                     <div class="small mb-1 d-flex flex-wrap gap-1">
-                                        <span class="badge px-2 py-1 mr-1" style="background: #0F1620; color: #E2E8F0; border: 1px solid rgba(243,238,226,0.15);">
-                                            Leads: <strong style="color: #60A5FA;"><?= $metrics['leads']['current'] ?? 0 ?> / <?= $metrics['leads']['max'] ?? '∞' ?></strong>
+                                        <span class="badge px-2 py-1 mr-1" style="background: #0F1620 !important; color: #E2E8F0 !important; border: 1px solid rgba(243,238,226,0.15) !important;">
+                                            Leads: <strong style="color: #60A5FA !important;"><?= $metrics['leads']['current'] ?? 0 ?> / <?= $metrics['leads']['max'] ?? '∞' ?></strong>
                                         </span>
-                                        <span class="badge px-2 py-1 mr-1" style="background: #0F1620; color: #E2E8F0; border: 1px solid rgba(243,238,226,0.15);">
-                                            Courses: <strong style="color: #34D399;"><?= $metrics['courses']['current'] ?? 0 ?> / <?= $metrics['courses']['max'] ?? '∞' ?></strong>
+                                        <span class="badge px-2 py-1 mr-1" style="background: #0F1620 !important; color: #E2E8F0 !important; border: 1px solid rgba(243,238,226,0.15) !important;">
+                                            Courses: <strong style="color: #34D399 !important;"><?= $metrics['courses']['current'] ?? 0 ?> / <?= $metrics['courses']['max'] ?? '∞' ?></strong>
                                         </span>
-                                        <span class="badge px-2 py-1" style="background: #0F1620; color: #E2E8F0; border: 1px solid rgba(243,238,226,0.15);">
-                                            Rev: <strong style="color: #F59E0B;">₹<?= number_format($metrics['total_revenue'] ?? 0) ?></strong>
+                                        <span class="badge px-2 py-1" style="background: #0F1620 !important; color: #E2E8F0 !important; border: 1px solid rgba(243,238,226,0.15) !important;">
+                                            Rev: <strong style="color: #F59E0B !important;">₹<?= number_format($metrics['total_revenue'] ?? 0) ?></strong>
                                         </span>
                                     </div>
                                     <div>
-                                        <small style="color: #94A3B8;">Modules: </small>
+                                        <small style="color: #CBD5E1 !important;">Modules: </small>
                                         <?php foreach ($activeModules as $mod): ?>
-                                            <span class="badge px-2 py-0 mr-1" style="font-size: 10px; background: rgba(217,174,104,0.15); color: #D9AE68; border: 1px solid rgba(217,174,104,0.3);"><?= strtoupper($mod) ?></span>
+                                            <span class="badge px-2 py-1 mr-1" style="font-size: 10px; background: rgba(217,174,104,0.2) !important; color: #F59E0B !important; border: 1px solid rgba(217,174,104,0.4) !important;"><?= strtoupper($mod) ?></span>
                                         <?php endforeach; ?>
                                     </div>
                                 </td>
