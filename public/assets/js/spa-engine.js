@@ -1,11 +1,54 @@
 /**
- * Tyche Monolith SPA Engine (Zero-Page-Reload Navigation)
- * Intercepts internal admin links and form submissions for instant React-like transitions.
+ * Tyche Monolith SPA Engine & Accordion Sidebar
+ * Intercepts internal admin links and form submissions for instant React-like transitions,
+ * with collapsible accordion sidebar persistence.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     const contentArea = document.getElementById('app-content');
     const loaderBar = document.getElementById('spa-loader-bar');
+
+    // Sidebar Accordion System
+    function initSidebarAccordion() {
+        const groups = document.querySelectorAll('.sidebar .nav-group');
+        let savedStates = {};
+        try {
+            savedStates = JSON.parse(localStorage.getItem('tyche_sidebar_accordion')) || {};
+        } catch (e) {}
+
+        groups.forEach(group => {
+            const groupId = group.getAttribute('id');
+            const header = group.querySelector('.nav-group-header');
+            const hasActiveLink = group.querySelector('.nav-item-link.active') !== null;
+
+            if (header) {
+                // If group contains currently active page link, auto-expand it!
+                if (hasActiveLink) {
+                    group.classList.remove('collapsed');
+                    if (groupId) savedStates[groupId] = 'open';
+                } else if (groupId && savedStates[groupId] === 'closed') {
+                    group.classList.add('collapsed');
+                }
+
+                // Add toggle click listener (bind once)
+                if (!header.hasAttribute('data-accordion-bound')) {
+                    header.setAttribute('data-accordion-bound', 'true');
+                    header.addEventListener('click', () => {
+                        const isCollapsed = group.classList.toggle('collapsed');
+                        if (groupId) {
+                            savedStates[groupId] = isCollapsed ? 'closed' : 'open';
+                            try {
+                                localStorage.setItem('tyche_sidebar_accordion', JSON.stringify(savedStates));
+                            } catch (e) {}
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // Initialize Accordion on initial load
+    initSidebarAccordion();
 
     if (!contentArea) return;
 
@@ -42,6 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {}
             }
         });
+
+        // Re-evaluate accordion expansion for newly active group
+        initSidebarAccordion();
     }
 
     function reinitializeDynamicComponents() {
