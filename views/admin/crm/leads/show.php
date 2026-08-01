@@ -153,6 +153,7 @@
         <div class="card-custom p-4 mb-4">
             <h5 class="h6 font-monospace text-warning border-bottom border-line pb-2 mb-3"><i class="bi bi-telephone-outbound-fill me-1"></i> Click-to-Call & Multi-Channel Activity Logger</h5>
             <form action="#" method="POST" id="quickLogForm">
+                <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label text-warning font-monospace small font-monospace">Channel</label>
