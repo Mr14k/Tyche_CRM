@@ -72,7 +72,20 @@
 
             <div class="mb-3">
                 <div class="text-secondary small font-monospace">ASSIGNED COUNSELOR</div>
-                <div class="fw-bold text-light font-monospace"><?= Security::e(($lead['counselor_first'] ?? 'Unassigned') . ' ' . ($lead['counselor_last'] ?? '')) ?></div>
+                <form action="<?= Url::to('/admin/crm/leads/' . $lead['id'] . '/assign-counselor') ?>" method="POST" class="mt-1">
+                    <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
+                    <div class="input-group input-group-sm">
+                        <select name="counselor_id" class="form-select bg-dark text-warning border-secondary font-monospace" required>
+                            <option value="">-- Select Counselor --</option>
+                            <?php foreach ($counselors as $cn): ?>
+                                <option value="<?= $cn['id'] ?>" <?= ((int)($lead['counselor_id'] ?? 0) === (int)$cn['id']) ? 'selected' : '' ?>>
+                                    <?= Security::e($cn['first_name'] . ' ' . $cn['last_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button type="submit" class="btn btn-gold font-monospace">Assign</button>
+                    </div>
+                </form>
             </div>
 
             <div class="mb-0">

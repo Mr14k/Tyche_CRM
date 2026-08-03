@@ -59,6 +59,70 @@
     </div>
 </div>
 
+<!-- Interactive Multi-Filter Control Bar -->
+<div class="card-custom p-3 mb-4 border border-warning-subtle">
+    <form action="<?= Url::to('/admin/crm/leads') ?>" method="GET" class="row g-2 align-items-center">
+        <!-- Preserve active stage status if selected -->
+        <?php if (!empty($filters['status'])): ?>
+            <input type="hidden" name="status" value="<?= Security::e($filters['status']) ?>">
+        <?php endif; ?>
+
+        <div class="col-md-3">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-dark text-warning border-secondary"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" class="form-control form-control-sm bg-dark text-light border-secondary font-monospace" placeholder="Search name, phone, email, code..." value="<?= Security::e($filters['search'] ?? '') ?>">
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <select name="counselor_id" class="form-select form-select-sm bg-dark text-light border-secondary font-monospace" onchange="this.form.submit()">
+                <option value="">-- Filter Counselor --</option>
+                <?php foreach ($counselors as $cn): ?>
+                    <option value="<?= $cn['id'] ?>" <?= ((string)($filters['counselor_id'] ?? '') === (string)$cn['id']) ? 'selected' : '' ?>>
+                        <?= Security::e($cn['first_name'] . ' ' . $cn['last_name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="course_id" class="form-select form-select-sm bg-dark text-light border-secondary font-monospace" onchange="this.form.submit()">
+                <option value="">-- Filter Course --</option>
+                <?php foreach ($courses as $c): ?>
+                    <option value="<?= $c['id'] ?>" <?= ((string)($filters['course_id'] ?? '') === (string)$c['id']) ? 'selected' : '' ?>>
+                        <?= Security::e($c['title']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="source" class="form-select form-select-sm bg-dark text-light border-secondary font-monospace" onchange="this.form.submit()">
+                <option value="">-- Filter Source --</option>
+                <option value="website_form" <?= ($filters['source'] ?? '') === 'website_form' ? 'selected' : '' ?>>Website Form</option>
+                <option value="google_ads" <?= ($filters['source'] ?? '') === 'google_ads' ? 'selected' : '' ?>>Google Ads</option>
+                <option value="meta_ads" <?= ($filters['source'] ?? '') === 'meta_ads' ? 'selected' : '' ?>>Meta Advantage+</option>
+                <option value="whatsapp" <?= ($filters['source'] ?? '') === 'whatsapp' ? 'selected' : '' ?>>WhatsApp Cloud API</option>
+                <option value="walk_in" <?= ($filters['source'] ?? '') === 'walk_in' ? 'selected' : '' ?>>Walk-in / Front Desk</option>
+                <option value="referral" <?= ($filters['source'] ?? '') === 'referral' ? 'selected' : '' ?>>Student Referral</option>
+                <option value="inbound_call" <?= ($filters['source'] ?? '') === 'inbound_call' ? 'selected' : '' ?>>Inbound Call</option>
+                <option value="manual" <?= ($filters['source'] ?? '') === 'manual' ? 'selected' : '' ?>>Manual Entry</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-check form-switch m-0 pt-1">
+                <input class="form-check-input" type="checkbox" name="is_sla_breached" value="1" id="slaFilter" <?= !empty($filters['is_sla_breached']) ? 'checked' : '' ?> onchange="this.form.submit()">
+                <label class="form-check-label font-monospace text-danger small" for="slaFilter">SLA Breached Only</label>
+            </div>
+        </div>
+
+        <div class="col-md-1 text-end">
+            <a href="<?= Url::to('/admin/crm/leads') ?>" class="btn btn-outline-secondary btn-sm font-monospace w-100" title="Reset All Filters"><i class="bi bi-x-circle"></i> Reset</a>
+        </div>
+    </form>
+</div>
+
 <!-- Stage Funnel Tabs -->
 <div class="d-flex gap-2 overflow-x-auto pb-2 mb-4">
     <a href="<?= Url::to('/admin/crm/leads') ?>" class="btn btn-sm font-monospace <?= empty($filters['status']) ? 'btn-gold' : 'btn-outline-secondary text-light' ?>">
@@ -97,13 +161,13 @@
                     <th style="background:#0F1620 !important; color:#D9AE68 !important;">Source</th>
                     <th style="background:#0F1620 !important; color:#D9AE68 !important;">Score</th>
                     <th style="background:#0F1620 !important; color:#D9AE68 !important;">Stage</th>
-                    <th style="background:#0F1620 !important; color:#D9AE68 !important;">Counselor</th>
+                    <th style="background:#0F1620 !important; color:#D9AE68 !important;">Assigned Counselor</th>
                     <th class="text-end" style="background:#0F1620 !important; color:#D9AE68 !important;">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($leads)): ?>
-                    <tr><td colspan="8" class="text-center text-muted py-4">No leads found in this pipeline filter.</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted py-4">No leads found matching your active pipeline filters.</td></tr>
                 <?php else: ?>
                     <?php foreach ($leads as $l): ?>
                         <tr style="background:#161F2B !important;">
@@ -152,8 +216,20 @@
                                     <div class="small text-danger font-monospace mt-1"><?= strtoupper(str_replace('_', ' ', $l['lost_reason'])) ?></div>
                                 <?php endif; ?>
                             </td>
-                            <td style="background:#161F2B !important;" class="small font-monospace text-light">
-                                <?= Security::e(($l['counselor_first'] ?? 'Unassigned') . ' ' . ($l['counselor_last'] ?? '')) ?>
+                            <!-- Inline Quick Counselor Assign Dropdown -->
+                            <td style="background:#161F2B !important;" class="small font-monospace">
+                                <form action="<?= Url::to('/admin/crm/leads/' . $l['id'] . '/assign-counselor') ?>" method="POST" class="d-inline">
+                                    <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
+                                    <input type="hidden" name="redirect_back" value="<?= Security::e($_SERVER['REQUEST_URI']) ?>">
+                                    <select name="counselor_id" class="form-select form-select-sm bg-dark text-warning border-secondary font-monospace py-0 px-2" style="font-size: 0.78rem;" onchange="this.form.submit()">
+                                        <option value="">-- Unassigned --</option>
+                                        <?php foreach ($counselors as $cn): ?>
+                                            <option value="<?= $cn['id'] ?>" <?= ((int)($l['counselor_id'] ?? 0) === (int)$cn['id']) ? 'selected' : '' ?>>
+                                                <?= Security::e($cn['first_name'] . ' ' . $cn['last_name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </form>
                             </td>
                             <td class="text-end" style="background:#161F2B !important;">
                                 <a href="<?= Url::to('/admin/crm/leads/' . $l['id']) ?>" class="btn btn-gold btn-sm px-3 font-monospace">
@@ -217,8 +293,8 @@
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label text-warning font-monospace small font-monospace">Assign Counselor</label>
-                            <select name="counselor_id" class="form-select font-monospace">
+                            <label class="form-label text-warning font-monospace small font-monospace">Assign Counselor *</label>
+                            <select name="counselor_id" class="form-select font-monospace" required>
                                 <?php foreach ($counselors as $cn): ?>
                                     <option value="<?= $cn['id'] ?>"><?= Security::e($cn['first_name'] . ' ' . $cn['last_name']) ?></option>
                                 <?php endforeach; ?>

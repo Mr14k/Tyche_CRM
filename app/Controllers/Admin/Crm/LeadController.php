@@ -75,8 +75,8 @@ class LeadController extends Controller
         $batchModel = new Batch();
         $batches = $batchModel->getActiveForCourse((int)$lead['course_id']);
 
-        $counselors = Database::fetchAll("SELECT id, first_name, last_name FROM users ORDER BY first_name ASC");
-
+        $tid = \App\Core\TenantContext::getTenantId();
+        $counselors = Database::fetchAll("SELECT id, first_name, last_name FROM users WHERE tenant_id = :tid ORDER BY first_name ASC", ['tid' => $tid]);
 
         $this->view('admin.crm.leads.show', [
             'pageTitle' => "Lead 360°: {$lead['first_name']} {$lead['last_name']} ({$lead['lead_code']})",
@@ -121,6 +121,23 @@ class LeadController extends Controller
 
         Flash::success("New lead created successfully! Code: {$res['lead_code']}");
         $this->redirect(Url::to('/admin/crm/leads/' . $res['lead_id']));
+    }
+
+    public function assignCounselor(Request $request, string $id): void
+    {
+        $counselorId = (int)$request->input('counselor_id');
+        if ($counselorId <= 0) {
+            Flash::error("Please select a valid counselor.");
+            $this->redirect(Url::to('/admin/crm/leads/' . $id));
+            return;
+        }
+
+        $user = Session::get('user');
+        $this->crmService->assignCounselor((int)$id, $counselorId, (int)($user['id'] ?? 1));
+
+        Flash::success("Lead assigned to counselor successfully!");
+        $redirectUrl = $request->input('redirect_back', '') ?: Url::to('/admin/crm/leads/' . $id);
+        $this->redirect($redirectUrl);
     }
 
     public function updateStage(Request $request, string $id): void

@@ -242,6 +242,7 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
     $router->post('/crm/leads', [LeadController::class, 'store'])->middleware('csrf')->middleware('perm:CRM.CreateLead');
     $router->post('/crm/leads/{id}/status', [LeadController::class, 'updateStage'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/{id}/stage', [LeadController::class, 'updateStage'])->middleware('csrf')->middleware('perm:CRM.EditLead');
+    $router->post('/crm/leads/{id}/assign-counselor', [LeadController::class, 'assignCounselor'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/{id}/reactivate', [LeadController::class, 'reactivate'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/{id}/payment-link', [LeadController::class, 'generatePaymentLink'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/import', [LeadController::class, 'importCsv'])->middleware('csrf')->middleware('perm:CRM.EditLead');

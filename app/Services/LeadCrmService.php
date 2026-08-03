@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Service;
+use App\Core\Database;
 use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Services\LeadDedupeService;
@@ -115,6 +116,29 @@ class LeadCrmService extends Service
             'type' => 'stage_change',
             'outcome' => $outcome,
             'notes' => $notes,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function assignCounselor(int $leadId, int $counselorId, ?int $userId = null): void
+    {
+        $oldLead = $this->leadModel->find($leadId);
+        if (!$oldLead) return;
+
+        $counselor = Database::fetchOne("SELECT first_name, last_name FROM users WHERE id = :id", ['id' => $counselorId]);
+        $counselorName = $counselor ? trim(($counselor['first_name'] ?? '') . ' ' . ($counselor['last_name'] ?? '')) : "Counselor #{$counselorId}";
+
+        $this->leadModel->update($leadId, [
+            'counselor_id' => $counselorId,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $this->activityModel->create([
+            'lead_id' => $leadId,
+            'user_id' => $userId ?? 1,
+            'type' => 'note',
+            'outcome' => 'assigned',
+            'notes' => "Lead assigned to counselor: {$counselorName}.",
             'created_at' => date('Y-m-d H:i:s')
         ]);
     }
