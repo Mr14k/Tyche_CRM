@@ -59,6 +59,9 @@ use App\Controllers\Admin\Placement\ApplicationController;
 
 use App\Controllers\Admin\Automation\CampaignController;
 use App\Controllers\Admin\Automation\CouponController;
+use App\Controllers\Admin\Marketing\AdIntegrationController;
+use App\Controllers\Webhooks\AdWebhookController;
+use App\Controllers\Admin\Automation\CouponController;
 
 use App\Controllers\Admin\System\AdminConsoleController;
 use App\Controllers\Admin\System\BackupController;
@@ -100,6 +103,13 @@ $router->get('/jobs', [JobWebController::class, 'index'])->name('web.jobs');
 $router->get('/jobs/{slug}', [JobWebController::class, 'show'])->name('web.jobs.show');
 
 $router->get('/verify-certificate/{code}', [CertificateVerificationController::class, 'verify'])->name('web.cert.verify');
+
+// ----------------------------------------------------
+// Public Ad-Sourced Lead Webhook Receivers (Meta & Google Ads)
+// ----------------------------------------------------
+$router->get('/webhooks/meta/leadgen', [AdWebhookController::class, 'metaChallenge']);
+$router->post('/webhooks/meta/leadgen', [AdWebhookController::class, 'metaLeadgen']);
+$router->post('/webhooks/google/leadform', [AdWebhookController::class, 'googleLeadform']);
 
 // ----------------------------------------------------
 // Student LMS Catalog & Player Routes
@@ -257,6 +267,12 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
     // Communication & Notification Hub (Phase 11)
     $router->get('/communication/hub', [NotificationHubController::class, 'index'])->name('admin.communication.hub')->middleware('perm:COMMUNICATION.SendBroadcast');
     $router->post('/communication/broadcast', [NotificationHubController::class, 'broadcast'])->middleware('csrf')->middleware('perm:COMMUNICATION.SendBroadcast');
+
+    // Meta & Google Ads Lead Ingestion (Phase 2 Module)
+    $router->get('/marketing/integrations', [AdIntegrationController::class, 'index'])->name('admin.marketing.integrations')->middleware('perm:AUTOMATION.ManageCampaigns');
+    $router->post('/marketing/integrations/meta', [AdIntegrationController::class, 'saveMeta'])->middleware('csrf')->middleware('perm:AUTOMATION.ManageCampaigns');
+    $router->post('/marketing/integrations/google', [AdIntegrationController::class, 'saveGoogle'])->middleware('csrf')->middleware('perm:AUTOMATION.ManageCampaigns');
+
 
     // CMS Management
     $router->get('/cms/pages', [PageController::class, 'index'])->name('admin.cms.pages')->middleware('perm:CMS.ViewPages');

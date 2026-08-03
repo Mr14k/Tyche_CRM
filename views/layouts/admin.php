@@ -407,7 +407,10 @@ use App\Helpers\Security;
                         <i class="bi bi-megaphone-fill"></i> Campaigns & Referrals
                     </a>
                     <a href="<?= Url::to('/admin/automation/coupons') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/automation/coupons') ? 'active' : '' ?>">
-                        <i class="bi bi-ticket-perforated-fill"></i> Discount Coupons
+                        <i class="bi bi-ticket-perforated"></i> Discount Coupons
+                    </a>
+                    <a href="<?= Url::to('/admin/marketing/integrations') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/marketing/integrations') ? 'active' : '' ?>">
+                        <i class="bi bi-plugin"></i> Meta & Google Ad Leads
                     </a>
                 </div>
             </div>

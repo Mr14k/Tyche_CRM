@@ -6,5 +6,5 @@ spl_autoload_register(function ($class) use ($root) {
 });
 \App\Core\EnvLoader::load($root . '/.env');
 
-$cols = \App\Core\Database::fetchAll("DESCRIBE site_settings");
-print_r($cols);
+$cols = \App\Core\Database::fetchAll("DESCRIBE leads");
+print_r(array_column($cols, 'Field'));

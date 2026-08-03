@@ -58,4 +58,25 @@ class Security
     {
         return bin2hex(random_bytes($length));
     }
+
+    public static function encryptSecret(string $plaintext): string
+    {
+        $key = hash('sha256', $_ENV['APP_SECRET'] ?? $_ENV['APP_NAME'] ?? 'TychePlatformSecret2026', true);
+        $iv = random_bytes(16);
+        $ciphertext = openssl_encrypt($plaintext, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        return base64_encode($iv . $ciphertext);
+    }
+
+    public static function decryptSecret(string $encrypted): string
+    {
+        $key = hash('sha256', $_ENV['APP_SECRET'] ?? $_ENV['APP_NAME'] ?? 'TychePlatformSecret2026', true);
+        $data = base64_decode($encrypted);
+        if (strlen($data) < 17) {
+            return '';
+        }
+        $iv = substr($data, 0, 16);
+        $ciphertext = substr($data, 16);
+        $decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        return $decrypted !== false ? $decrypted : '';
+    }
 }
