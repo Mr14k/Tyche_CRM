@@ -220,7 +220,7 @@
                             <td style="background:#161F2B !important;" class="small font-monospace">
                                 <form action="<?= Url::to('/admin/crm/leads/' . $l['id'] . '/assign-counselor') ?>" method="POST" class="d-inline">
                                     <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
-                                    <input type="hidden" name="redirect_back" value="<?= Security::e($_SERVER['REQUEST_URI']) ?>">
+                                    <input type="hidden" name="redirect_back" value="<?= Security::e(Url::to('/admin/crm/leads')) ?>">
                                     <select name="counselor_id" class="form-select form-select-sm bg-dark text-warning border-secondary font-monospace py-0 px-2" style="font-size: 0.78rem;" onchange="this.form.submit()">
                                         <option value="">-- Unassigned --</option>
                                         <?php foreach ($counselors as $cn): ?>

@@ -9,6 +9,7 @@ class Url
     public static function base(string $path = ''): string
     {
         $baseUrl = $_ENV['APP_URL'] ?? 'http://localhost/tyche';
+        $subfolder = '';
         
         // Auto-detect base path if running under Apache/XAMPP subfolder
         if (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['SCRIPT_NAME'])) {
@@ -20,6 +21,16 @@ class Url
         }
 
         $baseUrl = rtrim($baseUrl, '/');
+        $path = ltrim($path, '/');
+
+        // Strip subfolder prefix if path already includes it to prevent /tyche/tyche/ URL duplication
+        if (!empty($subfolder)) {
+            $subName = ltrim($subfolder, '/');
+            if (!empty($subName) && str_starts_with($path, $subName . '/')) {
+                $path = substr($path, strlen($subName) + 1);
+            }
+        }
+
         return $baseUrl . '/' . ltrim($path, '/');
     }
 
