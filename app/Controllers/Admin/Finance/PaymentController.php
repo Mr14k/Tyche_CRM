@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\Admission;
 use App\Services\InvoiceService;
 use App\Services\CommunicationService;
+use App\Services\PaymentGatewayService;
 use App\Exceptions\NotFoundException;
 use App\Helpers\Flash;
 use App\Helpers\Url;
@@ -124,5 +125,25 @@ class PaymentController extends Controller
 
         Flash::success("18% Statutory GST Invoice '{$inv['invoice_number']}' generated successfully!");
         $this->redirect(Url::to('/admin/finance/invoices/' . $inv['invoice_id']));
+    }
+
+    public function settings(Request $request): void
+    {
+        $gatewayService = new PaymentGatewayService();
+        $config = $gatewayService->getActiveGatewayConfig();
+
+        $this->view('admin.finance.settings', [
+            'pageTitle' => 'Payment Gateways & Merchant Credentials — Tyche Academy',
+            'config' => $config
+        ], 'admin');
+    }
+
+    public function updateSettings(Request $request): void
+    {
+        $gatewayService = new PaymentGatewayService();
+        $gatewayService->saveTenantGatewaySettings($request->all());
+
+        Flash::success('Academy merchant payment gateway credentials & settings saved successfully.');
+        $this->redirect(Url::to('/admin/finance/settings'));
     }
 }

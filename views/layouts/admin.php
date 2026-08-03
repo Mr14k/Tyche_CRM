@@ -372,6 +372,9 @@ use App\Helpers\Security;
                     <a href="<?= Url::to('/admin/finance/invoices') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/finance/invoices') ? 'active' : '' ?>">
                         <i class="bi bi-receipt-cutoff"></i> 18% GST Tax Invoices
                     </a>
+                    <a href="<?= Url::to('/admin/finance/settings') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/finance/settings') ? 'active' : '' ?>">
+                        <i class="bi bi-credit-card-2-front"></i> Payment Gateways & UPI
+                    </a>
                 </div>
             </div>
         <?php endif; ?>

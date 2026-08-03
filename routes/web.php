@@ -247,8 +247,11 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
     $router->get('/finance/payments', [PaymentController::class, 'index'])->name('admin.finance.payments')->middleware('perm:FINANCE.ViewPayments');
     $router->post('/finance/payments', [PaymentController::class, 'store'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
     $router->post('/finance/payments/{id}/generate-invoice', [PaymentController::class, 'generateInvoice'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
+    $router->get('/finance/settings', [PaymentController::class, 'settings'])->name('admin.finance.settings')->middleware('perm:FINANCE.ViewPayments');
+    $router->post('/finance/settings', [PaymentController::class, 'updateSettings'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
     $router->get('/finance/invoices', [InvoiceController::class, 'index'])->name('admin.finance.invoices')->middleware('perm:FINANCE.ManageInvoices');
     $router->get('/finance/invoices/{id}/view', [InvoiceController::class, 'showInvoice'])->name('admin.finance.invoices.view')->middleware('perm:FINANCE.ManageInvoices');
+
 
 
     // Communication & Notification Hub (Phase 11)
