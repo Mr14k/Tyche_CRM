@@ -152,13 +152,14 @@ assertAdTest("Google Ads Webhook processes payload & handles duplicate submissio
 
     $service = new \App\Services\AdLeadIngestionService();
     $uniquePhone = "+9199" . rand(10000000, 99999999);
+    $uniqueEmail = "googlead_" . time() . "_" . rand(100, 999) . "@example.com";
 
     $googlePayload = [
         'google_key' => $googleKey,
         'lead_id' => 'g_lead_' . time(),
         'user_column_data' => [
             ['column_id' => 'FULL_NAME', 'string_value' => 'Google Ads Prospect'],
-            ['column_id' => 'EMAIL', 'string_value' => 'googlead@example.com'],
+            ['column_id' => 'EMAIL', 'string_value' => $uniqueEmail],
             ['column_id' => 'PHONE_NUMBER', 'string_value' => $uniquePhone]
         ]
     ];
