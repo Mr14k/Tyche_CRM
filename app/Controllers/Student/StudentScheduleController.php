@@ -34,7 +34,7 @@ class StudentScheduleController extends Controller
         );
 
         $batchId = (int)($enrollment['batch_id'] ?? 0);
-        $schedules = $this->scheduleModel->getStudentSchedulesForBatch($batchId);
+        $schedules = $this->scheduleModel->getStudentSchedules($studentId, $batchId);
 
         $this->view('student.schedules', [
             'pageTitle' => 'My Live Class Timetable & Digital Classroom — Student Portal',

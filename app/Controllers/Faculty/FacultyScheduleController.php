@@ -40,7 +40,17 @@ class FacultyScheduleController extends Controller
         $schedules = $this->scheduleModel->getFacultySchedules($facultyId, $startDate, $endDate);
         $telemetry = $this->scheduleModel->getFacultyTelemetry($facultyId);
 
-        $assignedCourses = Database::fetchAll("SELECT c.* FROM course_instructors ci JOIN courses c ON ci.course_id = c.id WHERE ci.user_id = :fid AND ci.tenant_id = :tid", ['fid' => $facultyId, 'tid' => $tid]);
+        $assignedCourses = Database::fetchAll("SELECT DISTINCT c.*, COALESCE(ci.role, 'Instructor') as instructor_role 
+            FROM courses c
+            LEFT JOIN course_instructors ci ON ci.course_id = c.id AND ci.user_id = :fid1
+            LEFT JOIN class_schedules cs ON cs.course_id = c.id AND cs.faculty_id = :fid2
+            WHERE c.tenant_id = :tid AND (ci.user_id = :fid3 OR cs.faculty_id = :fid4)", [
+                'fid1' => $facultyId,
+                'fid2' => $facultyId,
+                'fid3' => $facultyId,
+                'fid4' => $facultyId,
+                'tid' => $tid
+            ]);
         $batches = Database::fetchAll("SELECT b.*, c.title as course_title FROM batches b JOIN courses c ON b.course_id = c.id WHERE b.tenant_id = :tid ORDER BY b.batch_name ASC", ['tid' => $tid]);
 
         $this->view('faculty.schedules', [

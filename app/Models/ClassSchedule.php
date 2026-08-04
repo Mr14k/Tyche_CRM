@@ -86,20 +86,23 @@ class ClassSchedule extends Model
         return Database::fetchAll($sql, ['tid' => $tid, 'fid' => $facultyId, 'today' => $today]);
     }
 
-    public function getStudentSchedulesForBatch(int $batchId): array
+    public function getStudentSchedules(int $studentId, int $batchId = 0): array
     {
         $tid = TenantContext::getTenantId();
         $today = date('Y-m-d');
-        $sql = "SELECT cs.*, c.title as course_title, b.batch_name, u.first_name as faculty_first, u.last_name as faculty_last
+        
+        $sql = "SELECT DISTINCT cs.*, c.title as course_title, b.batch_name, u.first_name as faculty_first, u.last_name as faculty_last
                 FROM class_schedules cs
                 JOIN courses c ON cs.course_id = c.id
                 LEFT JOIN batches b ON cs.batch_id = b.id
                 JOIN users u ON cs.faculty_id = u.id
-                WHERE cs.tenant_id = :tid AND (cs.batch_id = :bid OR cs.batch_id IS NULL)
+                JOIN course_enrollments ce ON ce.course_id = cs.course_id
+                WHERE cs.tenant_id = :tid AND ce.user_id = :sid AND ce.status = 'active'
+                  AND (cs.batch_id IS NULL OR cs.batch_id = 0 OR cs.batch_id = ce.batch_id OR cs.batch_id = :bid)
                   AND (cs.status = 'live' OR (cs.status = 'scheduled' AND cs.schedule_date >= :today))
                 ORDER BY (cs.status = 'live') DESC, cs.schedule_date ASC, cs.start_time ASC";
 
-        return Database::fetchAll($sql, ['tid' => $tid, 'bid' => $batchId, 'today' => $today]);
+        return Database::fetchAll($sql, ['tid' => $tid, 'sid' => $studentId, 'bid' => $batchId, 'today' => $today]);
     }
 
     public function getFacultyTelemetry(int $facultyId): array
