@@ -190,6 +190,38 @@ class LeadController extends Controller
         $this->redirect(Url::to('/admin/crm/leads/' . $id));
     }
 
+    public function recordOfflinePayment(Request $request, string $id): void
+    {
+        $courseId = (int)$request->input('course_id');
+        $batchId = !empty($request->input('batch_id')) ? (int)$request->input('batch_id') : null;
+        $amount = (float)$request->input('amount');
+        $paymentMethod = (string)$request->input('payment_method', 'cash');
+        $referenceNumber = $request->input('reference_number');
+        $notes = $request->input('notes');
+
+        if ($amount <= 0 || $courseId <= 0) {
+            Flash::error("Please specify a valid course and amount paid.");
+            $this->redirect(Url::to('/admin/crm/leads/' . $id));
+            return;
+        }
+
+        $user = Session::get('user');
+        $linkService = new CrmPaymentLinkService();
+        $res = $linkService->recordOfflinePaymentAndEnroll(
+            (int)$id,
+            $courseId,
+            $batchId,
+            $amount,
+            $paymentMethod,
+            $referenceNumber,
+            $notes,
+            (int)($user['id'] ?? 1)
+        );
+
+        Flash::success("Offline " . strtoupper($paymentMethod) . " Payment of ₹" . number_format($amount, 2) . " recorded successfully! Student Account #" . $res['user_id'] . " provisioned & Tax Invoice " . $res['invoice_number'] . " issued.");
+        $this->redirect(Url::to('/admin/crm/leads/' . $id));
+    }
+
     public function importCsv(Request $request): void
     {
         if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {

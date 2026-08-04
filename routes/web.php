@@ -254,6 +254,7 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
     $router->post('/crm/leads/{id}/activity', [LeadController::class, 'logActivity'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/{id}/reactivate', [LeadController::class, 'reactivate'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/{id}/payment-link', [LeadController::class, 'generatePaymentLink'])->middleware('csrf')->middleware('perm:CRM.EditLead');
+    $router->post('/crm/leads/{id}/offline-payment', [LeadController::class, 'recordOfflinePayment'])->middleware('csrf')->middleware('perm:CRM.EditLead');
     $router->post('/crm/leads/import', [LeadController::class, 'importCsv'])->middleware('csrf')->middleware('perm:CRM.EditLead');
 
     $router->get('/crm/batches', [BatchController::class, 'index'])->name('admin.crm.batches')->middleware('perm:CRM.ViewLeads');

@@ -128,35 +128,101 @@
             </form>
         </div>
 
-        <!-- Generator: Custom 18% GST Payment Link -->
+        <!-- Generator: Payment Collection & Statutory 18% GST Invoicing -->
         <div class="card-custom p-4">
-            <h5 class="h6 font-monospace text-gold border-bottom border-line pb-2 mb-3"><i class="bi bi-credit-card-2-front-fill me-1"></i> Generate Statutory Payment Link</h5>
-            <form action="<?= Url::to('/admin/crm/leads/' . $lead['id'] . '/payment-link') ?>" method="POST">
-                <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
-                <input type="hidden" name="course_id" value="<?= $lead['course_id'] ?>">
-                
-                <div class="mb-3">
-                    <label class="form-label text-warning font-monospace small font-monospace">Select Academic Batch</label>
-                    <select name="batch_id" class="form-select font-monospace">
-                        <?php foreach ($batches as $b): ?>
-                            <option value="<?= $b['id'] ?>"><?= Security::e($b['batch_name']) ?> (Starts: <?= Format::date($b['start_date'], 'M d') ?>)</option>
-                        <?php endforeach; ?>
-                    </select>
+            <h5 class="h6 font-monospace text-gold border-bottom border-line pb-2 mb-3">
+                <i class="bi bi-cash-coin me-1"></i> Payment Collection & GST Invoicing
+            </h5>
+
+            <!-- Tabs header -->
+            <ul class="nav nav-pills nav-justified mb-3" id="paymentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active font-monospace btn-sm py-1" id="online-tab" data-bs-toggle="tab" data-bs-target="#onlineTabContent" type="button" role="tab"><i class="bi bi-qr-code me-1"></i> Online Link</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link font-monospace btn-sm py-1" id="offline-tab" data-bs-toggle="tab" data-bs-target="#offlineTabContent" type="button" role="tab"><i class="bi bi-wallet2 me-1"></i> Cash / Bank Offline</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="paymentTabsContent">
+                <!-- TAB 1: Online Gateway Payment Link -->
+                <div class="tab-pane fade show active" id="onlineTabContent" role="tabpanel">
+                    <form action="<?= Url::to('/admin/crm/leads/' . $lead['id'] . '/payment-link') ?>" method="POST">
+                        <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
+                        <input type="hidden" name="course_id" value="<?= $lead['course_id'] ?>">
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-warning font-monospace small">Target Academic Batch</label>
+                            <select name="batch_id" class="form-select font-monospace">
+                                <?php foreach ($batches as $b): ?>
+                                    <option value="<?= $b['id'] ?>"><?= Security::e($b['batch_name']) ?> (Starts: <?= Format::date($b['start_date'], 'M d') ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-warning small font-monospace">Fee Amount (18% GST Inc.) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-warning border-secondary font-monospace">₹</span>
+                                <input type="number" step="0.01" name="amount" class="form-control font-monospace fw-bold" value="<?= $lead['discount_price'] ?? $lead['price'] ?? 25000 ?>" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 font-monospace py-2 text-dark fw-bold">
+                            <i class="bi bi-send-fill me-1"></i> Generate Online Payment Link
+                        </button>
+                    </form>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label text-warning small font-monospace">Fee Amount (18% GST Inc.) *</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-dark text-warning border-secondary font-monospace">₹</span>
-                        <input type="number" step="0.01" name="amount" class="form-control font-monospace fw-bold" value="<?= $lead['discount_price'] ?? $lead['price'] ?? 25000 ?>" required>
+                <!-- TAB 2: Offline Cash / Cheque / Bank Transfer & Instant Enrollment -->
+                <div class="tab-pane fade" id="offlineTabContent" role="tabpanel">
+                    <form action="<?= Url::to('/admin/crm/leads/' . $lead['id'] . '/offline-payment') ?>" method="POST">
+                        <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
+                        <input type="hidden" name="course_id" value="<?= $lead['course_id'] ?>">
 
-                    </div>
+                        <div class="mb-2">
+                            <label class="form-label text-warning font-monospace small">Payment Mode *</label>
+                            <select name="payment_method" class="form-select font-monospace">
+                                <option value="cash">💵 Cash Received at Front Desk</option>
+                                <option value="bank_transfer">🏦 Bank Transfer (NEFT / IMPS / RTGS)</option>
+                                <option value="cheque">📝 Cheque / Demand Draft (DD)</option>
+                                <option value="pos">💳 Offline Card Swipe / POS Terminal</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label text-warning font-monospace small">Academic Batch *</label>
+                            <select name="batch_id" class="form-select font-monospace">
+                                <?php foreach ($batches as $b): ?>
+                                    <option value="<?= $b['id'] ?>"><?= Security::e($b['batch_name']) ?> (Starts: <?= Format::date($b['start_date'], 'M d') ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label text-warning small font-monospace">Amount Collected (18% GST Inc.) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-warning border-secondary font-monospace">₹</span>
+                                <input type="number" step="0.01" name="amount" class="form-control font-monospace fw-bold text-success" value="<?= $lead['discount_price'] ?? $lead['price'] ?? 25000 ?>" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label text-warning small font-monospace">Receipt / Reference No. (Optional)</label>
+                            <input type="text" name="reference_number" class="form-control font-monospace" placeholder="e.g. CASH-8821 or Bank UTR">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-warning small font-monospace">Counselor Notes</label>
+                            <textarea name="notes" class="form-control font-monospace small" rows="2" placeholder="Collected cash at desk by Rajnish..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 font-monospace py-2 text-white fw-bold">
+                            <i class="bi bi-check-circle-fill me-1"></i> Record Cash & Instant Enroll
+                        </button>
+                    </form>
                 </div>
-
-                <button type="submit" class="btn btn-warning w-100 font-monospace py-2 text-dark fw-bold">
-                    <i class="bi bi-send-fill me-1"></i> Generate & Send Payment Link
-                </button>
-            </form>
+            </div>
         </div>
     </div>
 
