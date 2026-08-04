@@ -6,5 +6,5 @@ spl_autoload_register(function ($class) use ($root) {
 });
 \App\Core\EnvLoader::load($root . '/.env');
 
-echo "=== USERS ===\n";
-print_r(array_column(\App\Core\Database::fetchAll("DESCRIBE users"), 'Field'));
+$cats = \App\Core\Database::fetchAll("SELECT * FROM course_categories");
+print_r($cats);

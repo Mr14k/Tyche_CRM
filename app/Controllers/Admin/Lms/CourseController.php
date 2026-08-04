@@ -32,7 +32,7 @@ class CourseController extends Controller
     public function index(Request $request): void
     {
         $courses = $this->courseModel->all();
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->getCategoriesForActiveTenant();
 
         $this->view('admin.lms.courses.index', [
             'pageTitle' => 'LMS Course Management — Tyche Academy',
@@ -43,7 +43,7 @@ class CourseController extends Controller
 
     public function create(Request $request): void
     {
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->getCategoriesForActiveTenant();
         $this->view('admin.lms.courses.create', [
             'pageTitle' => 'Build New Academic Course — Tyche Academy',
             'categories' => $categories
@@ -63,10 +63,12 @@ class CourseController extends Controller
         $data = $this->validate($request, [
             'title' => 'required|min:3',
             'code' => 'required|unique:courses,code',
-            'category_id' => 'required',
             'description' => 'required',
             'price' => 'required|numeric'
         ]);
+
+        $categories = $this->categoryModel->getCategoriesForActiveTenant();
+        $categoryId = !empty($request->input('category_id')) ? (int)$request->input('category_id') : (int)($categories[0]['id'] ?? 1);
 
         $highlights = $this->buildHighlightsPayload($request);
 
@@ -74,7 +76,7 @@ class CourseController extends Controller
             'title' => $data['title'],
             'slug' => Format::slug($data['title']),
             'code' => strtoupper($data['code']),
-            'category_id' => (int)$data['category_id'],
+            'category_id' => $categoryId,
             'short_description' => $request->input('short_description'),
             'description' => $data['description'],
             'level' => $request->input('level', 'all_levels'),
@@ -102,7 +104,7 @@ class CourseController extends Controller
             $this->redirect(Url::to('/admin/lms/courses'));
         }
 
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->getCategoriesForActiveTenant();
         $hierarchy = $this->courseModel->getFullHierarchy((int)$id);
 
         $this->view('admin.lms.courses.edit', [
@@ -128,12 +130,15 @@ class CourseController extends Controller
             'price' => 'required|numeric'
         ]);
 
+        $categories = $this->categoryModel->getCategoriesForActiveTenant();
+        $categoryId = !empty($request->input('category_id')) ? (int)$request->input('category_id') : (int)($course['category_id'] ?? $categories[0]['id'] ?? 1);
+
         $highlights = $this->buildHighlightsPayload($request);
 
         $this->courseModel->update((int)$id, [
             'title' => $data['title'],
             'code' => strtoupper($data['code']),
-            'category_id' => (int)$request->input('category_id', $course['category_id']),
+            'category_id' => $categoryId,
             'short_description' => $request->input('short_description'),
             'description' => $request->input('description', $course['description']),
             'level' => $request->input('level', 'all_levels'),
