@@ -144,7 +144,7 @@ $router->group(['middleware' => ['guest']], function($router) {
 // ----------------------------------------------------
 // Authenticated Shared Routes
 // ----------------------------------------------------
-$router->group(['middleware' => ['auth']], function($router) {
+$router->group(['middleware' => ['auth', 'tenant']], function($router) {
     $router->post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('csrf');
 
     $router->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -161,7 +161,7 @@ $router->group(['middleware' => ['auth']], function($router) {
 // ----------------------------------------------------
 // Student Portal Routes (Phase 6 & 8)
 // ----------------------------------------------------
-$router->group(['prefix' => '/student', 'middleware' => ['auth', 'perm:STUDENT.Portal']], function($router) {
+$router->group(['prefix' => '/student', 'middleware' => ['auth', 'tenant', 'perm:STUDENT.Portal']], function($router) {
     $router->get('/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
     $router->get('/schedules', [StudentScheduleController::class, 'index'])->name('student.schedules');
     $router->get('/quizzes/{id}', [StudentQuizController::class, 'show'])->name('student.quiz');
@@ -177,7 +177,7 @@ $router->group(['prefix' => '/student', 'middleware' => ['auth', 'perm:STUDENT.P
 // ----------------------------------------------------
 // Faculty Workspace Routes (Phase 7 & 8)
 // ----------------------------------------------------
-$router->group(['prefix' => '/faculty', 'middleware' => ['auth', 'perm:FACULTY.Workspace']], function($router) {
+$router->group(['prefix' => '/faculty', 'middleware' => ['auth', 'tenant', 'perm:FACULTY.Workspace']], function($router) {
     $router->get('/dashboard', [FacultyDashboardController::class, 'index'])->name('faculty.dashboard');
     $router->get('/schedules', [FacultyScheduleController::class, 'index'])->name('faculty.schedules');
     $router->post('/schedules/store', [FacultyScheduleController::class, 'store'])->middleware('csrf');

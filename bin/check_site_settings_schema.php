@@ -6,5 +6,5 @@ spl_autoload_register(function ($class) use ($root) {
 });
 \App\Core\EnvLoader::load($root . '/.env');
 
-echo "=== COURSE_ENROLLMENTS ===\n";
-print_r(array_column(\App\Core\Database::fetchAll("DESCRIBE course_enrollments"), 'Field'));
+echo "=== CLASS_SCHEDULES SCHEMA ===\n";
+print_r(\App\Core\Database::fetchAll("DESCRIBE class_schedules"));
