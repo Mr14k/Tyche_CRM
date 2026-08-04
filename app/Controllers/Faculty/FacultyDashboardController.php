@@ -30,10 +30,11 @@ class FacultyDashboardController extends Controller
         $facultyId = (int)$user['id'];
         $tid = TenantContext::getTenantId();
 
-        $assignedCourses = Database::fetchAll("SELECT c.*, ci.role as instructor_role 
-            FROM course_instructors ci
-            JOIN courses c ON ci.course_id = c.id
-            WHERE ci.user_id = :fid AND ci.tenant_id = :tid", ['fid' => $facultyId, 'tid' => $tid]);
+        $assignedCourses = Database::fetchAll("SELECT DISTINCT c.*, COALESCE(ci.role, 'Instructor') as instructor_role 
+            FROM courses c
+            LEFT JOIN course_instructors ci ON ci.course_id = c.id AND ci.user_id = :fid
+            LEFT JOIN class_schedules cs ON cs.course_id = c.id AND cs.faculty_id = :fid
+            WHERE c.tenant_id = :tid AND (ci.user_id = :fid OR cs.faculty_id = :fid)", ['fid' => $facultyId, 'tid' => $tid]);
 
         $pendingSubmissions = (new AssignmentSubmission())->getSubmissionsForFaculty($facultyId);
 

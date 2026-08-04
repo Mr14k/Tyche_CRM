@@ -85,6 +85,20 @@ class ClassScheduleService extends Service
             'created_by_role' => $createdByRole
         ]);
 
+        // Auto-assign faculty to course_instructors if not already linked
+        if ($facultyId > 0 && $courseId > 0) {
+            $existsInst = Database::fetchOne(
+                "SELECT 1 FROM course_instructors WHERE tenant_id = :tid AND course_id = :cid AND user_id = :fid LIMIT 1",
+                ['tid' => $tid, 'cid' => $courseId, 'fid' => $facultyId]
+            );
+            if (!$existsInst) {
+                Database::execute(
+                    "INSERT INTO course_instructors (tenant_id, course_id, user_id, role) VALUES (:tid, :cid, :fid, 'instructor')",
+                    ['tid' => $tid, 'cid' => $courseId, 'fid' => $facultyId]
+                );
+            }
+        }
+
         return (int)$id;
     }
 
