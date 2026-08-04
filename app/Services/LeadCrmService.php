@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Core\Service;
 use App\Core\Database;
+use App\Core\TenantContext;
 use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Services\LeadDedupeService;
@@ -140,6 +141,27 @@ class LeadCrmService extends Service
             'outcome' => 'assigned',
             'notes' => "Lead assigned to counselor: {$counselorName}.",
             'created_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function logActivity(int $leadId, string $type, string $outcome, ?string $notes = null, ?int $durationSeconds = null, ?int $userId = null): void
+    {
+        $tid = TenantContext::getTenantId();
+
+        $this->activityModel->create([
+            'tenant_id' => $tid,
+            'lead_id' => $leadId,
+            'user_id' => $userId ?? 1,
+            'type' => $type,
+            'outcome' => $outcome,
+            'notes' => $notes,
+            'duration_seconds' => $durationSeconds ?: null,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $this->leadModel->update($leadId, [
+            'last_interaction_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
 

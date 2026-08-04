@@ -6,5 +6,5 @@ spl_autoload_register(function ($class) use ($root) {
 });
 \App\Core\EnvLoader::load($root . '/.env');
 
-$indexes = \App\Core\Database::fetchAll("SHOW INDEX FROM course_categories");
-print_r($indexes);
+echo "=== LEAD_ACTIVITIES ===\n";
+print_r(array_column(\App\Core\Database::fetchAll("DESCRIBE lead_activities"), 'Field'));

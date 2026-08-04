@@ -165,7 +165,7 @@
         <!-- Quick Outreach Logger -->
         <div class="card-custom p-4 mb-4">
             <h5 class="h6 font-monospace text-warning border-bottom border-line pb-2 mb-3"><i class="bi bi-telephone-outbound-fill me-1"></i> Click-to-Call & Multi-Channel Activity Logger</h5>
-            <form action="#" method="POST" id="quickLogForm">
+            <form action="<?= Url::to('/admin/crm/leads/' . $lead['id'] . '/activity') ?>" method="POST" id="quickLogForm">
                 <input type="hidden" name="_token" value="<?= Security::csrfToken() ?>">
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -197,7 +197,7 @@
                         <textarea name="notes" class="form-control font-monospace small" rows="2" placeholder="Summarize call discussion or student questions..."></textarea>
                     </div>
                     <div class="col-12 text-end">
-                        <button type="button" class="btn btn-gold font-monospace px-4"><i class="bi bi-check-lg me-1"></i> Log Activity to Timeline</button>
+                        <button type="submit" class="btn btn-gold font-monospace px-4"><i class="bi bi-check-lg me-1"></i> Log Activity to Timeline</button>
                     </div>
                 </div>
             </form>

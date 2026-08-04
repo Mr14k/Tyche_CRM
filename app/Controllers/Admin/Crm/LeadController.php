@@ -140,6 +140,20 @@ class LeadController extends Controller
         $this->redirect($redirectUrl);
     }
 
+    public function logActivity(Request $request, string $id): void
+    {
+        $type = (string)$request->input('type', 'call');
+        $outcome = (string)$request->input('outcome', 'connected');
+        $notes = $request->input('notes');
+        $durationSeconds = !empty($request->input('duration_seconds')) ? (int)$request->input('duration_seconds') : null;
+
+        $user = Session::get('user');
+        $this->crmService->logActivity((int)$id, $type, $outcome, $notes, $durationSeconds, (int)($user['id'] ?? 1));
+
+        Flash::success("Activity logged to 360° lead timeline successfully!");
+        $this->redirect(Url::to('/admin/crm/leads/' . $id));
+    }
+
     public function updateStage(Request $request, string $id): void
     {
         $status = $request->input('status');
