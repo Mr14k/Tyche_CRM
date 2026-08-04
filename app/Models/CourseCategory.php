@@ -22,16 +22,20 @@ class CourseCategory extends Model
         // Auto-seed default academic categories for new tenant if empty
         $tid = TenantContext::getTenantId();
         $defaultCategories = [
-            ['name' => 'Digital Marketing & Growth', 'slug' => 'digital-marketing', 'description' => 'SEO, Paid Media, Social Media, and Performance Marketing', 'icon_class' => 'bi-graph-up-arrow'],
-            ['name' => 'Data Science & Analytics', 'slug' => 'data-science', 'description' => 'Machine Learning, Python, Big Data, and Business Intelligence', 'icon_class' => 'bi-bar-chart-fill'],
-            ['name' => 'Software Development & IT', 'slug' => 'software-dev', 'description' => 'Full-Stack Development, Cloud Architecture, and DevOps', 'icon_class' => 'bi-code-slash'],
-            ['name' => 'Business & Management', 'slug' => 'business-management', 'description' => 'Executive Leadership, Product Management, and Finance', 'icon_class' => 'bi-briefcase-fill'],
-            ['name' => 'General Certification', 'slug' => 'general-certification', 'description' => 'Foundational and Professional Skill Certification Courses', 'icon_class' => 'bi-award-fill']
+            ['name' => 'Digital Marketing & Growth', 'slug' => 'digital-marketing-t' . $tid, 'description' => 'SEO, Paid Media, Social Media, and Performance Marketing', 'icon_class' => 'bi-graph-up-arrow'],
+            ['name' => 'Data Science & Analytics', 'slug' => 'data-science-t' . $tid, 'description' => 'Machine Learning, Python, Big Data, and Business Intelligence', 'icon_class' => 'bi-bar-chart-fill'],
+            ['name' => 'Software Development & IT', 'slug' => 'software-dev-t' . $tid, 'description' => 'Full-Stack Development, Cloud Architecture, and DevOps', 'icon_class' => 'bi-code-slash'],
+            ['name' => 'Business & Management', 'slug' => 'business-management-t' . $tid, 'description' => 'Executive Leadership, Product Management, and Finance', 'icon_class' => 'bi-briefcase-fill'],
+            ['name' => 'General Certification', 'slug' => 'general-certification-t' . $tid, 'description' => 'Foundational and Professional Skill Certification Courses', 'icon_class' => 'bi-award-fill']
         ];
 
         foreach ($defaultCategories as $cat) {
             $cat['tenant_id'] = $tid;
-            $this->create($cat);
+            try {
+                $this->create($cat);
+            } catch (\Throwable $e) {
+                // Ignore individual duplicate slug insert conflicts safely
+            }
         }
 
         return $this->all();

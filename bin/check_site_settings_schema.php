@@ -6,5 +6,5 @@ spl_autoload_register(function ($class) use ($root) {
 });
 \App\Core\EnvLoader::load($root . '/.env');
 
-$cats = \App\Core\Database::fetchAll("SELECT * FROM course_categories");
-print_r($cats);
+$indexes = \App\Core\Database::fetchAll("SHOW INDEX FROM course_categories");
+print_r($indexes);

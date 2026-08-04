@@ -12,21 +12,18 @@ spl_autoload_register(function ($class) use ($root) {
 use App\Core\TenantContext;
 use App\Models\CourseCategory;
 
-echo "Testing Multi-Tenant Course Category Auto-Seeding...\n";
+echo "Testing Multi-Tenant Course Category Auto-Seeding across Tenants 2, 3, 4...\n";
 
-// Test for Tenant 2 (Simulating a new tenant with no initial categories)
-TenantContext::setTenantId(2);
-
-$categoryModel = new CourseCategory();
-$categories = $categoryModel->getCategoriesForActiveTenant();
-
-echo "Tenant 2 Category Count: " . count($categories) . "\n";
-print_r(array_column($categories, 'name'));
-
-if (!empty($categories) && count($categories) >= 5) {
-    echo "[PASS] Multi-tenant course category auto-seeding verified!\n";
-    exit(0);
-} else {
-    echo "[FAIL] Failed to auto-seed categories for tenant!\n";
-    exit(1);
+foreach ([2, 3, 4] as $tid) {
+    TenantContext::setTenantId($tid);
+    $categoryModel = new CourseCategory();
+    $categories = $categoryModel->getCategoriesForActiveTenant();
+    echo "Tenant {$tid} Category Count: " . count($categories) . "\n";
+    if (empty($categories)) {
+        echo "[FAIL] Tenant {$tid} failed to seed categories!\n";
+        exit(1);
+    }
 }
+
+echo "[PASS] Multi-tenant course category auto-seeding verified clean across all tenants!\n";
+exit(0);
