@@ -355,6 +355,9 @@ use App\Helpers\Security;
                     <a href="<?= Url::to('/admin/lms/enrollments') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/lms/enrollments') ? 'active' : '' ?>">
                         <i class="bi bi-mortarboard"></i> Student Enrollments
                     </a>
+                    <a href="<?= Url::to('/admin/lms/schedules') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/lms/schedules') ? 'active' : '' ?>">
+                        <i class="bi bi-calendar3"></i> Class Timetables & Rooms
+                    </a>
                 </div>
             </div>
         <?php endif; ?>
@@ -509,6 +512,9 @@ use App\Helpers\Security;
                     <a href="<?= Url::to('/student/dashboard') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/student/dashboard') ? 'active' : '' ?>">
                         <i class="bi bi-laptop"></i> Digital Classroom
                     </a>
+                    <a href="<?= Url::to('/student/schedules') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/student/schedules') ? 'active' : '' ?>">
+                        <i class="bi bi-calendar2-week"></i> Live Class Timetable
+                    </a>
                     <a href="<?= Url::to('/student/assignments') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/student/assignments') ? 'active' : '' ?>">
                         <i class="bi bi-file-earmark-check"></i> Assignments Hub
                     </a>
@@ -528,6 +534,9 @@ use App\Helpers\Security;
                 <div class="nav-group-items">
                     <a href="<?= Url::to('/faculty/dashboard') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/faculty/dashboard') ? 'active' : '' ?>">
                         <i class="bi bi-person-workspace"></i> Instructor Desk
+                    </a>
+                    <a href="<?= Url::to('/faculty/schedules') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/faculty/schedules') ? 'active' : '' ?>">
+                        <i class="bi bi-calendar-event"></i> My Timetables & Live Rooms
                     </a>
                     <a href="<?= Url::to('/faculty/assignments') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/faculty/assignments') ? 'active' : '' ?>">
                         <i class="bi bi-check-all"></i> Grade Submissions

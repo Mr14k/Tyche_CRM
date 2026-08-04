@@ -74,6 +74,9 @@ use App\Controllers\Student\StudentCertificateController;
 
 use App\Controllers\Faculty\FacultyDashboardController;
 use App\Controllers\Faculty\FacultyAssignmentController;
+use App\Controllers\Faculty\FacultyScheduleController;
+use App\Controllers\Admin\Lms\AdminClassScheduleController;
+use App\Controllers\Student\StudentScheduleController;
 
 use App\Controllers\Account\ProfileController;
 
@@ -160,6 +163,7 @@ $router->group(['middleware' => ['auth']], function($router) {
 // ----------------------------------------------------
 $router->group(['prefix' => '/student', 'middleware' => ['auth', 'perm:STUDENT.Portal']], function($router) {
     $router->get('/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+    $router->get('/schedules', [StudentScheduleController::class, 'index'])->name('student.schedules');
     $router->get('/quizzes/{id}', [StudentQuizController::class, 'show'])->name('student.quiz');
     $router->post('/quizzes/{id}', [StudentQuizController::class, 'submit'])->middleware('csrf');
 
@@ -175,6 +179,10 @@ $router->group(['prefix' => '/student', 'middleware' => ['auth', 'perm:STUDENT.P
 // ----------------------------------------------------
 $router->group(['prefix' => '/faculty', 'middleware' => ['auth', 'perm:FACULTY.Workspace']], function($router) {
     $router->get('/dashboard', [FacultyDashboardController::class, 'index'])->name('faculty.dashboard');
+    $router->get('/schedules', [FacultyScheduleController::class, 'index'])->name('faculty.schedules');
+    $router->post('/schedules/store', [FacultyScheduleController::class, 'store'])->middleware('csrf');
+    $router->post('/schedules/{id}/go-live', [FacultyScheduleController::class, 'toggleGoLive'])->middleware('csrf');
+    $router->post('/schedules/{id}/status', [FacultyScheduleController::class, 'updateStatus'])->middleware('csrf');
     $router->get('/assignments', [FacultyAssignmentController::class, 'index'])->name('faculty.assignments');
     $router->post('/assignments/{id}/grade', [FacultyAssignmentController::class, 'grade'])->middleware('csrf');
 });
@@ -337,4 +345,9 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
 
     $router->get('/lms/enrollments', [EnrollmentController::class, 'index'])->name('admin.lms.enrollments')->middleware('perm:LMS.ManageEnrollments');
     $router->post('/lms/enrollments', [EnrollmentController::class, 'store'])->middleware('csrf')->middleware('perm:LMS.ManageEnrollments');
+
+    // Admin Class Timetables & Live Rooms
+    $router->get('/lms/schedules', [AdminClassScheduleController::class, 'index'])->name('admin.lms.schedules')->middleware('perm:LMS.ViewCourses');
+    $router->post('/lms/schedules', [AdminClassScheduleController::class, 'store'])->middleware('csrf')->middleware('perm:LMS.CreateCourse');
+    $router->post('/lms/schedules/{id}/go-live', [AdminClassScheduleController::class, 'toggleGoLive'])->middleware('csrf')->middleware('perm:LMS.EditCourse');
 });

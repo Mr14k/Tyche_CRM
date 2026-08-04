@@ -6,5 +6,5 @@ spl_autoload_register(function ($class) use ($root) {
 });
 \App\Core\EnvLoader::load($root . '/.env');
 
-$cols = \App\Core\Database::fetchAll("DESCRIBE leads");
-print_r(array_column($cols, 'Field'));
+echo "=== USERS ===\n";
+print_r(array_column(\App\Core\Database::fetchAll("DESCRIBE users"), 'Field'));
