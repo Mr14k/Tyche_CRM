@@ -12,6 +12,7 @@ use App\Helpers\Security;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= Url::to('/assets/css/tyche-modern-ui.css') ?>">
     <style>
         :root {
             --bg: #0F1620;
@@ -576,6 +577,36 @@ use App\Helpers\Security;
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <!-- ⚡ Non-Tech Friendly Quick Action Speed Dial -->
+                <div class="dropdown">
+                    <button class="quick-action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        <span>+ Quick Action</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end quick-action-menu">
+                        <li><h6 class="dropdown-header text-uppercase text-muted font-monospace" style="font-size: 10px;">Common Operations</h6></li>
+                        <li>
+                            <a class="dropdown-item" href="<?= Url::to('/admin/crm/leads') ?>">
+                                <i class="bi bi-person-plus-fill text-info"></i> Add / View CRM Leads
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="<?= Url::to('/admin/crm/leads') ?>">
+                                <i class="bi bi-cash-stack text-success"></i> Record Cash / Offline Payment
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="<?= Url::to('/faculty/schedules') ?>">
+                                <i class="bi bi-calendar-plus-fill text-warning"></i> Schedule Live Class
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="<?= Url::to('/admin/communication/hub') ?>">
+                                <i class="bi bi-megaphone-fill text-danger"></i> Send Broadcast Announcement
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                 <?php if (($_SESSION['user']['tenant_id'] ?? 1) === 1): ?>
                     <?php
                         $tenantModel = new \App\Models\Tenant();

@@ -1,0 +1,253 @@
+/* ==========================================================================
+   TYCHE ENTERPRISE SaaS -- MODERN UI & UX DESIGN SYSTEM (2026)
+   Clean, Professional, High-Contrast Slate Navy & Royal Indigo Theme
+   ========================================================================== */
+
+:root {
+    --bg-dark: #0F172A;
+    --bg-card: #1E293B;
+    --bg-elevated: #334155;
+    --bg-input: #0F172A;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(99, 102, 241, 0.3);
+    
+    --accent-indigo: #6366F1;
+    --accent-indigo-hover: #4F46E5;
+    --accent-emerald: #10B981;
+    --accent-gold: #F59E0B;
+    --accent-rose: #EF4444;
+    --accent-cyan: #06B6D4;
+    
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --text-subtle: #64748B;
+    
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Core Page & Body Refresh --- */
+body.bg-dark {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-main) !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* --- Card & Container Enhancements --- */
+.card, .bg-card, .bg-elevated {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-soft) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+    border-color: var(--border-hover) !important;
+}
+
+/* --- Sidebar Styling --- */
+.sidebar, nav.sidebar {
+    background-color: #0B1120 !important;
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.sidebar .nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    color: #FFFFFF !important;
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    border-left: 3px solid var(--accent-indigo);
+}
+
+.sidebar .nav-link i {
+    color: var(--accent-indigo) !important;
+}
+
+/* --- Header & Top Bar --- */
+header, .top-header, navbar {
+    background-color: #0F172A !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* --- Buttons & Primary Actions --- */
+.btn-indigo, .btn-primary {
+    background-color: var(--accent-indigo) !important;
+    border-color: var(--accent-indigo) !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-indigo:hover, .btn-primary:hover {
+    background-color: var(--accent-indigo-hover) !important;
+    border-color: var(--accent-indigo-hover) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+    color: #000000 !important;
+    font-weight: 700;
+    border: none !important;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+}
+
+.btn-gold:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+}
+
+.btn-outline-light {
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --- Form Controls & Inputs --- */
+.form-control, .form-select {
+    background-color: var(--bg-input) !important;
+    border: 1px solid #334155 !important;
+    color: var(--text-main) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 0.55rem 0.85rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-indigo) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+/* --- High-Contrast Status Chips --- */
+.badge-chip {
+    padding: 0.35em 0.75em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-radius: 50rem;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-new { background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3); }
+.badge-contacted { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-qualified { background: rgba(99, 102, 241, 0.15); color: #818CF8; border: 1px solid rgba(99, 102, 241, 0.3); }
+.badge-nurturing { background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3); }
+.badge-application_sent { background: rgba(236, 72, 153, 0.15); color: #F472B6; border: 1px solid rgba(236, 72, 153, 0.3); }
+.badge-enrolled { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-lost { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-sla-breached { background: rgba(239, 68, 68, 0.25); color: #FF6B6B; border: 1px solid #EF4444; animation: pulse-sla 2s infinite; }
+
+@keyframes pulse-sla {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* --- Tables & Data Grids --- */
+.table {
+    color: var(--text-main) !important;
+}
+
+.table th {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 0.85rem 1rem !important;
+}
+
+.table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    padding: 0.85rem 1rem !important;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.04) !important;
+}
+
+/* --- Non-Tech Helper Tooltips & Guidance Banners --- */
+.tech-helper-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+/* --- Modals & Popups --- */
+.modal-content {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color) !important;
+}
+
+/* --- Header Quick Action Speed-Dial Dropdown --- */
+.quick-action-btn {
+    background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.quick-action-btn:hover {
+    filter: brightness(1.1);
+}
+
+.quick-action-menu {
+    background-color: #1E293B !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    padding: 0.5rem;
+    min-width: 240px;
+}
+
+.quick-action-menu .dropdown-item {
+    color: #F8FAFC !important;
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.quick-action-menu .dropdown-item:hover {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    color: #818CF8 !important;
+}
