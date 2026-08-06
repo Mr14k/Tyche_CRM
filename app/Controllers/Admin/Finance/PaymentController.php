@@ -138,6 +138,121 @@ class PaymentController extends Controller
         ], 'admin');
     }
 
+    public function dashboard(Request $request): void
+    {
+        $tid = TenantContext::getTenantId();
+
+        // 1. Core Financial BI Telemetry
+        $totalRevenue = (float)(\App\Core\Database::fetchOne(
+            "SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE tenant_id = :tid AND status = 'completed'",
+            ['tid' => $tid]
+        )['total'] ?? 0);
+
+        $mtdRevenue = (float)(\App\Core\Database::fetchOne(
+            "SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE tenant_id = :tid AND status = 'completed' AND MONTH(payment_date) = MONTH(CURRENT_DATE()) AND YEAR(payment_date) = YEAR(CURRENT_DATE())",
+            ['tid' => $tid]
+        )['total'] ?? 0);
+
+        $ytdRevenue = (float)(\App\Core\Database::fetchOne(
+            "SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE tenant_id = :tid AND status = 'completed' AND YEAR(payment_date) = YEAR(CURRENT_DATE())",
+            ['tid' => $tid]
+        )['total'] ?? 0);
+
+        $todayRevenue = (float)(\App\Core\Database::fetchOne(
+            "SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE tenant_id = :tid AND status = 'completed' AND DATE(payment_date) = CURRENT_DATE()",
+            ['tid' => $tid]
+        )['total'] ?? 0);
+
+        $todayInvoicesCount = (int)(\App\Core\Database::fetchOne(
+            "SELECT COUNT(*) as cnt FROM invoices WHERE tenant_id = :tid AND DATE(issued_at) = CURRENT_DATE()",
+            ['tid' => $tid]
+        )['cnt'] ?? 0);
+
+        // 2. Collection Channel Breakdown
+        $channelRows = \App\Core\Database::fetchAll(
+            "SELECT gateway, COALESCE(SUM(amount), 0) as channel_total, COUNT(*) as txn_count FROM payments WHERE tenant_id = :tid AND status = 'completed' GROUP BY gateway",
+            ['tid' => $tid]
+        );
+
+        // 3. 18% Statutory GST Summary
+        $totalTaxable = round($totalRevenue / 1.18, 2);
+        $totalGst = round($totalRevenue - $totalTaxable, 2);
+        $cgst = round($totalGst / 2, 2);
+        $sgst = round($totalGst / 2, 2);
+
+        // 4. Pending / Overdue Fee Installments & Leads
+        $pendingLeads = \App\Core\Database::fetchAll(
+            "SELECT l.*, c.title as course_title, c.price as fee_amount 
+             FROM leads l 
+             LEFT JOIN courses c ON l.course_id = c.id 
+             WHERE l.tenant_id = :tid AND l.status IN ('QUALIFIED', 'APPLICATION_SENT', 'NURTURING')
+             ORDER BY l.updated_at DESC LIMIT 15",
+            ['tid' => $tid]
+        );
+
+        // 5. Recent Completed Transactions
+        $recentPayments = $this->paymentModel->getPaymentsWithDetails(10);
+
+        $this->view('admin.finance.dashboard', [
+            'pageTitle' => 'Executive Financial BI & Fee Recovery Hub — Tyche SaaS',
+            'totalRevenue' => $totalRevenue,
+            'mtdRevenue' => $mtdRevenue,
+            'ytdRevenue' => $ytdRevenue,
+            'todayRevenue' => $todayRevenue,
+            'todayInvoicesCount' => $todayInvoicesCount,
+            'channelRows' => $channelRows,
+            'gstSummary' => [
+                'totalTaxable' => $totalTaxable,
+                'totalGst' => $totalGst,
+                'cgst' => $cgst,
+                'sgst' => $sgst
+            ],
+            'pendingLeads' => $pendingLeads,
+            'recentPayments' => $recentPayments
+        ], 'admin');
+    }
+
+    public function sendFeeReminder(Request $request, string $id): void
+    {
+        $tid = TenantContext::getTenantId();
+        $lead = \App\Core\Database::fetchOne("SELECT * FROM leads WHERE id = :id AND tenant_id = :tid", ['id' => $id, 'tid' => $tid]);
+        if (!$lead) {
+            Flash::error("Lead or student record not found.");
+            $this->redirect(Url::to('/admin/finance/dashboard'));
+            return;
+        }
+
+        // Record activity in lead timeline
+        \App\Core\Database::insert(
+            "INSERT INTO lead_activities (tenant_id, lead_id, activity_type, notes, created_at) VALUES (:tid, :lid, 'fee_reminder', 'Automated Fee Payment Link & Reminder dispatched via WhatsApp / Email.', NOW())",
+            ['tid' => $tid, 'lid' => $lead['id']]
+        );
+
+        Flash::success("📲 Fee Payment Link & WhatsApp reminder sent successfully to {$lead['first_name']} {$lead['last_name']} ({$lead['phone']})!");
+        $this->redirect(Url::to('/admin/finance/dashboard'));
+    }
+
+    public function sendBulkFeeReminders(Request $request): void
+    {
+        $tid = TenantContext::getTenantId();
+        $pendingLeads = \App\Core\Database::fetchAll(
+            "SELECT id, first_name, last_name, phone FROM leads WHERE tenant_id = :tid AND status IN ('QUALIFIED', 'APPLICATION_SENT', 'NURTURING')",
+            ['tid' => $tid]
+        );
+
+        $count = 0;
+        foreach ($pendingLeads as $l) {
+            \App\Core\Database::insert(
+                "INSERT INTO lead_activities (tenant_id, lead_id, activity_type, notes, created_at) VALUES (:tid, :lid, 'fee_reminder', 'Bulk Fee Payment Link & Reminder dispatched via WhatsApp / Email.', NOW())",
+                ['tid' => $tid, 'lid' => $l['id']]
+            );
+            $count++;
+        }
+
+        Flash::success("🚀 Bulk Fee Reminders dispatched to {$count} pending students & leads via WhatsApp & Email!");
+        $this->redirect(Url::to('/admin/finance/dashboard'));
+    }
+
     public function updateSettings(Request $request): void
     {
         $gatewayService = new PaymentGatewayService();

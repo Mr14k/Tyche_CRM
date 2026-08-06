@@ -265,9 +265,12 @@ $router->group(['prefix' => '/admin', 'middleware' => ['auth', 'tenant']], funct
 
 
     // Payments & GST Invoices (Phase 10)
+    $router->get('/finance/dashboard', [PaymentController::class, 'dashboard'])->name('admin.finance.dashboard')->middleware('perm:FINANCE.ViewPayments');
     $router->get('/finance/payments', [PaymentController::class, 'index'])->name('admin.finance.payments')->middleware('perm:FINANCE.ViewPayments');
     $router->post('/finance/payments', [PaymentController::class, 'store'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
     $router->post('/finance/payments/{id}/generate-invoice', [PaymentController::class, 'generateInvoice'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
+    $router->post('/finance/remind/{id}', [PaymentController::class, 'sendFeeReminder'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
+    $router->post('/finance/remind-all', [PaymentController::class, 'sendBulkFeeReminders'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
     $router->get('/finance/settings', [PaymentController::class, 'settings'])->name('admin.finance.settings')->middleware('perm:FINANCE.ViewPayments');
     $router->post('/finance/settings', [PaymentController::class, 'updateSettings'])->middleware('csrf')->middleware('perm:FINANCE.ViewPayments');
     $router->get('/finance/invoices', [InvoiceController::class, 'index'])->name('admin.finance.invoices')->middleware('perm:FINANCE.ManageInvoices');

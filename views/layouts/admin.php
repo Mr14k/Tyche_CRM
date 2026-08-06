@@ -370,6 +370,9 @@ use App\Helpers\Security;
                     <i class="bi bi-chevron-down toggle-icon"></i>
                 </div>
                 <div class="nav-group-items">
+                    <a href="<?= Url::to('/admin/finance/dashboard') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/finance/dashboard') ? 'active' : '' ?>">
+                        <i class="bi bi-pie-chart-fill text-gold"></i> Financial BI Dashboard
+                    </a>
                     <a href="<?= Url::to('/admin/finance/payments') ?>" class="nav-item-link <?= str_contains($_SERVER['REQUEST_URI'], '/admin/finance/payments') ? 'active' : '' ?>">
                         <i class="bi bi-currency-rupee"></i> Payment Transactions
                     </a>
